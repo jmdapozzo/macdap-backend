@@ -1,0 +1,128 @@
+extends layout
+
+block content
+
+  //- script(type="text/javascript").
+  //-   $(document).ready(function () {
+  //-     $('.clickable-row').click(function () {
+  //-       window.location = $(this).attr("data-href");
+  //-     });
+  //-   });
+
+  script(src='/lib/i18next.min.js')
+  script(src='/lib/i18nextHttpBackend.min.js')
+  script(src='/lib/i18nextBrowserLanguageDetector.min.js')
+  script(src='/RGraph/RGraph.common.core.js')
+  script(src='/RGraph/RGraph.common.dynamic.js')
+  script(src='/RGraph/RGraph.meter.js')
+
+  script(type="text/javascript").
+
+    $( document ).ready(function() {
+
+      defaultColors = [
+          [0.5,1.5, '#528EDC'], 
+          [1.5,2.5, '#87C905'], 
+          [2.5,3.5, '#E3E226'], 
+          [3.5,4.5, '#F58723'],
+          [4.5,5.5, '#CC170E']
+      ];
+
+      const i18nextOptions = {
+        ns: ['common', 'sopfeu'],
+        defaultNS: 'sopfeu',
+        load:['en', 'fr'],
+        fallbackLng: 'en',
+        getAsync:false,
+        backend: {
+          loadPath: '/locales/{{lng}}/{{ns}}.json'
+        }
+      };
+
+      i18next
+        .use(i18nextHttpBackend)
+        .use(i18nextBrowserLanguageDetector)
+        .init(i18nextOptions);
+
+      meter = new RGraph.Meter({
+        id: 'meter',
+        min: 0.5,
+        max: 5.5,
+        value: 0,
+        options: {
+            marginLeft: 15,
+            marginRight: 15,
+            marginTop: 15,
+            marginBottom: 15,
+
+            centerpinStroke: 'rgba(0,0,0,0)',
+            centerpinFill: 'rgba(0,0,0,0)',
+
+            colorsRanges: defaultColors,
+
+            labelsCount: 0,
+            
+            anglesStart: RGraph.PI + 0.5,
+            anglesEnd: RGraph.TWOPI - 0.5,
+
+            linewidthSegments: 0,
+            textSize: 16,
+            colorsStroke: 'white',
+            segmentsRadiusStart: 150,
+            needleRadius: 115,
+            border: 0,
+            tickmarksSmallCount: 0,
+            tickmarksLargeCount: 0,
+            
+            adjustable: true
+        }
+      }).draw();
+
+    });
+
+    $(document).on('show.bs.modal','#fireRiskModal', function (event) {
+
+      var button = $(event.relatedTarget);
+      var dataVal = button.data('val');
+      const currentDate = new Date(dataVal.updatedAt);
+
+      var locationLabel = document.getElementById("locationLabel");
+      var riskNowLabel = document.getElementById("riskNowLabel");
+      var updateDateTimeLabel = document.getElementById("updateDateTimeLabel");
+
+      riskNowLabel.innerHTML = i18next.t(dataVal.riskNowKey);
+      locationLabel.innerHTML = dataVal.name;
+      updateDateTimeLabel.innerHTML = currentDate.toLocaleString();
+      
+      meter.value = dataVal.riskNow;
+      meter.grow();
+
+    })
+
+  .modal.fade(id='fireRiskModal')
+    .modal-dialog
+      .modal-content
+        .modal-header
+          h5.modal-title=t('sopfeu:fireRiskTitle')
+          button.close(type='button', data-dismiss='modal')
+            span &times;
+            
+        .modal-body
+          .row.justify-content-center
+            canvas(id='meter', width='300', height='200')=t('sopfeu:error.noCanvasSupport')
+          h3.text-center(id='riskNowLabel')
+          h4.text-center(id='locationLabel')
+          h5.text-center(id='updateDateTimeLabel')
+
+  div
+    h1=t('sopfeu:fireRiskTitle')
+    table.table-striped.table-bordered(style='width:100%')
+      thead
+        tr
+          th=t('sopfeu:regionTableHeader')
+          th=t('sopfeu:riskTableHeader')
+      tbody
+        each fireRisk in fireRisks
+          tr.clickable-row(data-href='/sopfeu/fire-risks/' + fireRisk.id, data-toggle='modal', data-target='#fireRiskModal', data-val=fireRisk)
+            td=fireRisk.name
+            td(style='background-color:#' + fireRisk.riskNowColor.toString(16))=t('sopfeu:' + fireRisk.riskNowKey)

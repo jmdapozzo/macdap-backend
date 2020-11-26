@@ -1,0 +1,11 @@
+{
+	"error": "Error",
+	"mission": "Be in control of your environment!",
+
+	"navBar": {
+		"home": "Home",
+		"sopfeu": "SOPFEU",
+		"test": "Test",
+		"login": "Login"
+	}
+}

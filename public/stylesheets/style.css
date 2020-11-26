@@ -1,0 +1,31 @@
+body {
+  padding: 50px;
+  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+}
+
+@font-face {
+  font-family: logoFont;
+  src: url(OpenSans-CondBold.ttf);
+}
+
+a {
+  color: #00B7FF;
+}
+
+.navbar-brand {
+  padding: 0px;
+  font-family:logoFont;
+}
+
+.navbar-brand>img {
+  height: auto;
+  width: 2em;
+}
+
+.navbar-brand>span {
+  padding-left: 0.5em;
+}
+
+.flag-icon {
+  padding-right: 2em;
+}

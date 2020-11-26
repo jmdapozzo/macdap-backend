@@ -1,0 +1,18 @@
+{
+	"fireRiskTitle": "Risque de feu",
+	"regionTableHeader": "Région",
+	"riskTableHeader": "Risque",
+
+	"fireRisk": {
+		"notAvailable": "N/D",
+		"low": "Bas",
+		"moderate": "Modéré",
+		"high": "Élevé",
+		"veryHigh": "Très élevé",
+		"extreme": "Extrême"
+	},
+
+	"error": {
+		"noCanvasSupport": "Désolé, votre fureteur ne supporte pas l'élément <canvas>."
+	}
+}

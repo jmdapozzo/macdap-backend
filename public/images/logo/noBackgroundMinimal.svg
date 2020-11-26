@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   inkscape:version="1.0 (4035a4f, 2020-05-01)"
+   sodipodi:docname="noBackgroundMinimal.svg"
+   id="svg214"
+   version="1.1"
+   viewBox="0 0 127.8 192"
+   height="320"
+   width="213"
+   class="thumb">
+  <metadata
+     id="metadata218">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <sodipodi:namedview
+     inkscape:current-layer="svg214"
+     inkscape:window-maximized="0"
+     inkscape:window-y="133"
+     inkscape:window-x="112"
+     inkscape:cy="420.10416"
+     inkscape:cx="205.74947"
+     inkscape:zoom="0.51316815"
+     showgrid="false"
+     id="namedview216"
+     inkscape:window-height="983"
+     inkscape:window-width="1695"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0"
+     guidetolerance="10"
+     gridtolerance="10"
+     objecttolerance="10"
+     borderopacity="1"
+     bordercolor="#666666"
+     pagecolor="#ffffff"
+     inkscape:document-rotation="0" />
+  <defs
+     id="defs119" />
+  <g
+     transform="matrix(0.09753178,2.791277,-2.791277,0.09753178,134.18301,-12.34486)"
+     id="g176">
+    <svg
+       width="77.003998"
+       height="53.700001"
+       viewBox="11.429 23.96 77.004 53.7"
+       version="1.1"
+       id="svg174">
+      <defs
+         id="defs164">
+        <linearGradient
+           x1="13.267878"
+           y1="62.915672"
+           x2="67.37957"
+           y2="62.915672"
+           id="linearGradientSk22bikz7g"
+           gradientTransform="scale(1.2382537,0.80758892)"
+           gradientUnits="userSpaceOnUse">
+          <stop
+             offset="0%"
+             stop-color="#33b5cc"
+             stop-opacity="0.53"
+             id="stop159" />
+          <stop
+             offset="100%"
+             stop-color="#33b5cc"
+             stop-opacity="0.53"
+             id="stop161" />
+        </linearGradient>
+      </defs>
+      <g
+         id="g166" />
+      <g
+         id="g168" />
+      <g
+         id="g172">
+        <path
+           fill-rule="evenodd"
+           clip-rule="evenodd"
+           d="m 73.232,28.96 c -5.631,0 -10.194,4.567 -10.194,10.197 0,8.74 -4.368,13.108 -13.11,13.108 -8.737,0 -13.111,-4.369 -13.111,-13.108 0,-5.63 -4.563,-10.197 -10.194,-10.197 -5.631,0 -10.194,4.567 -10.194,10.197 0,5.631 4.563,10.198 10.194,10.198 8.742,0 13.111,4.369 13.111,13.111 0,5.631 4.563,10.194 10.195,10.194 5.63,0 10.2,-4.563 10.2,-10.194 0,-8.742 4.368,-13.111 13.104,-13.111 5.637,0 10.2,-4.567 10.2,-10.198 0,-5.63 -4.564,-10.197 -10.201,-10.197 z"
+           fill="url('#linearGradientSk22bikz7g')"
+           stroke="none"
+           style="fill:url(#linearGradientSk22bikz7g)"
+           id="path170" />
+      </g>
+    </svg>
+  </g>
+</svg>
