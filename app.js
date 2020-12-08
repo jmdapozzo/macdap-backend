@@ -11,7 +11,7 @@ const i18nextFsBackend = require('i18next-fs-backend');
 const i18nextHttpMiddleware = require('i18next-http-middleware');
 const logger = require('morgan');
 
-const whitelist = ['http://localhost:3001'];
+const whitelist = ['http://localhost:3000'];
 const corsOptions = {
   origin: function (origin, callback) {
     if (whitelist.indexOf(origin) !== -1 || !origin) {
@@ -25,15 +25,11 @@ const corsOptions = {
 const i18nextOptions = {
   initImmediate: false,
   fallbackLng: 'en',
-  preload: fs.readdirSync(path.join(__dirname, 'locales')).filter((fileName) => {
-    const joinedPath = path.join(path.join(__dirname, 'locales'), fileName)
-    const isDirectory = fs.lstatSync(joinedPath).isDirectory()
-    return isDirectory
-  }),
+  preload: ['en', 'fr'],
   ns: ['common', 'index', 'sopfeu'],
   defaultNS: 'common',
   backend: {
-    loadPath: path.join(__dirname, 'locales/{{lng}}/{{ns}}.json')
+    loadPath: 'public/locales/{{lng}}/{{ns}}.json'
   }
 };
 
@@ -63,7 +59,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static('public'));
-app.use('/locales', express.static('locales'));
+//app.use('/locales', express.static('locales'));
 app.use(i18nextHttpMiddleware.handle(i18next));
 
 const indexRouter = require('./routes/index');

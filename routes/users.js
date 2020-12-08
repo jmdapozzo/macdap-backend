@@ -40,7 +40,9 @@ const getTableData = (req, res, db) => {
                 res.json({ dataExists: 'false' })
             }
         })
-        .catch(err => res.status(400).json({ dbError: 'db error' }))
+        .catch(err => {
+            res.status(400).json({ dbError: `db error - ${err.detail}` })
+        })
 }
 
 const postTableData = (req, res, db) => {
@@ -51,7 +53,9 @@ const postTableData = (req, res, db) => {
         .then(item => {
             res.json(item)
         })
-        .catch(err => res.status(400).json({ dbError: 'db error' }))
+        .catch(err => {
+            res.status(400).json({ dbError: `db error - ${err.detail}` })
+        })
 }
 
 const putTableData = (req, res, db) => {
@@ -61,7 +65,9 @@ const putTableData = (req, res, db) => {
         .then(item => {
             res.json(item)
         })
-        .catch(err => res.status(400).json({ dbError: 'db error' }))
+        .catch(err => {
+            res.status(400).json({ dbError: `db error - ${err.detail}` })
+        })
 }
 
 const deleteTableData = (req, res, db) => {
@@ -70,5 +76,7 @@ const deleteTableData = (req, res, db) => {
         .then(() => {
             res.json({ delete: 'true' })
         })
-        .catch(err => res.status(400).json({ dbError: 'db error' }))
+        .catch(err => {
+            res.status(400).json({ dbError: `db error - ${err.detail}` })
+        })
 }
