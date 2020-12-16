@@ -23,10 +23,10 @@ class Risk {
         this.riskNow = riskNow;
         this.riskNowKey = this.#getRiskKey(riskNow);
         this.riskNowColor = this.#getRiskColor(riskNow);
-        this.riskTomorrow = this.riskTomorrow;
+        this.riskTomorrow = riskTomorrow;
         this.riskTomorrowKey = this.#getRiskKey(riskTomorrow);
         this.riskTomorrowColor = this.#getRiskColor(riskTomorrow);
-        this.riskAfterTomorrow = this.riskAfterTomorrow;
+        this.riskAfterTomorrow = riskAfterTomorrow;
         this.riskAfterTomorrowKey = this.#getRiskKey(riskAfterTomorrow);
         this.riskAfterTomorrowColor = this.#getRiskColor(riskAfterTomorrow);
     }
@@ -49,12 +49,12 @@ class Risk {
 }
 
 const riskColors = [
-    0x0,
-    0x528EDC, 
-    0x87C905, 
-    0xE3E226, 
-    0xF58723,
-    0xCC170E
+    '#0',
+    '#528EDC', 
+    '#87C905', 
+    '#E3E226', 
+    '#F58723',
+    '#CC170E'
 ];
 
 const riskKeys = [
@@ -79,10 +79,6 @@ getRiskZones();
 setInterval(getRiskZones, 10000);
 
 // Set routes
-router.get('/', function(req, res, next) {
-    res.render('sopfeu', { title: 'SOPFEU', fireRisks});
-});
-
 router.get('/fire-risks', function(req, res, next) {
     res.send(fireRisks);
 });
@@ -109,10 +105,10 @@ router.get('/regions/:id', function(req, res, next) {
     }
 });
 
-// Export routes
-module.exports = router;
+router.get('/risk-colors', function(req, res, next) {
+    res.send(riskColors);
+});
 
-// Support functions
 function getRiskZones() {
     const currentDate = new Date();
     if (currentDate >= nextUpdateAt) {
@@ -141,3 +137,5 @@ function getRiskZones() {
         console.log(`Current date is ${currentDate} \nWaiting for ${nextUpdateAt}\n`)
     }
 }
+
+module.exports = router;
