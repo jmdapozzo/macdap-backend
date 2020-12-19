@@ -5,7 +5,6 @@ const path = require('path');
 const fs = require('fs')
 const cookieParser = require('cookie-parser');
 const cors = require('cors');
-const basicAuth = require('express-basic-auth');
 const i18next = require("i18next");
 const i18nextFsBackend = require('i18next-fs-backend');
 const i18nextHttpMiddleware = require('i18next-http-middleware');
@@ -37,15 +36,6 @@ i18next
   .use(i18nextHttpMiddleware.LanguageDetector)
   .use(i18nextFsBackend)
   .init(i18nextOptions);
-
-const basicAuthOptions = {
-  challenge: true,
-  authorizer: (username, password) => {
-    const userMatches = basicAuth.safeCompare(username, 'admin');
-    const passwordMatches = basicAuth.safeCompare(password, '123456');
-    return userMatches & passwordMatches
-  }
-};
 
 const app = express();
 
