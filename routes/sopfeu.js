@@ -120,6 +120,10 @@ function getRiskZones() {
             console.log(`Last update at ${lastUpdate} \nNext one schedule at ${nextUpdateAt}\n`)
 
             fireRisks = response.data.map((o) => {
+                // const simRiskNow = Math.floor(Math.random() * 6);
+                // const simRiskTomorrow = Math.floor(Math.random() * 6);
+                // const simRiskAfterTomorrow = Math.floor(Math.random() * 6);
+                // return new Risk(o.id, o.name, o.updatedAt, simRiskNow, simRiskTomorrow, simRiskAfterTomorrow);
                 return new Risk(o.id, o.name, o.updatedAt, o.riskNow, o.riskTomorrow, o.riskAfterTomorrow);
             });
                 

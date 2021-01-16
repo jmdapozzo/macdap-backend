@@ -1,6 +1,9 @@
 const createError = require('http-errors');
 const express = require('express');
 require('dotenv').config();
+const jwt = require('express-jwt');
+const jwtAuthz = require('express-jwt-authz');
+const jwksRsa = require('jwks-rsa');
 const path = require('path');
 const fs = require('fs')
 const cookieParser = require('cookie-parser');
@@ -20,6 +23,20 @@ const corsOptions = {
     }
   }
 }
+
+const checkJwt = jwt({
+  secret: jwksRsa.expressJwtSecret({
+    cache: true,
+    rateLimit: true,
+    jwksRequestsPerMinute: 5,
+    jwksUri: `https://macdap.us.auth0.com/.well-known/jwks.json`
+  }),
+
+  // Validate the audience and the issuer.
+  audience: process.env.AUTH0_AUDIENCE,
+  issuer: process.env.AUTH0_ISSUER,
+  algorithms: ['RS256']
+});
 
 const i18nextOptions = {
   initImmediate: false,
@@ -55,11 +72,36 @@ app.use('/sopfeu', sopfeuRouter);
 const usersRouter = require('./routes/users');
 app.use('/users', usersRouter);
 
-app.use(function(req, res, next) {
+////////////////////////////
+
+app.get('/api/public', function(req, res) {
+  res.json({
+    message: 'Hello from a public endpoint! You don\'t need to be authenticated to see this.'
+  });
+});
+
+// This route needs authentication
+app.get('/api/private', checkJwt, function(req, res) {
+  res.json({
+    message: 'Hello from a private endpoint! You need to be authenticated to see this.'
+  });
+});
+
+const checkScopes = jwtAuthz([ 'read:messages' ]);
+
+app.get('/api/private-scoped', checkJwt, checkScopes, function(req, res) {
+  res.json({
+    message: 'Hello from a private endpoint! You need to be authenticated and have a scope of read:messages to see this.'
+  });
+});
+
+///////////////////////////
+
+app.use(function (req, res, next) {
   next(createError(404));
 });
 
-app.use(function(err, req, res, next) {
+app.use(function (err, req, res, next) {
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
   res.status(err.status || 500).send();
