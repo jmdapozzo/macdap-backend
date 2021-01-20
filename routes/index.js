@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
 
-router.get('/', function(req, res, next) {
-  const nanmeplate = {
+router.get('/', function(req, res) {
+  const nameplate = {
     company: req.i18n.t('company'),
     brand: req.i18n.t('brand'),
     applicationName: req.i18n.t('applicationName'),
@@ -10,7 +10,7 @@ router.get('/', function(req, res, next) {
     version: '0.0.0',
     versionDate: ''
     }
-  res.send(nanmeplate);
+  res.send(nameplate);
 });
 
 module.exports = router;
