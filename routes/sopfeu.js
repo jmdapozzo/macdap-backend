@@ -2,6 +2,15 @@ const express = require("express");
 const router = express.Router();
 const axios = require("axios");
 
+class Region {
+  id;
+  name;
+
+  constructor(id, name) {
+    this.id = id;
+    this.name = name;
+  }
+}
 class Risk {
   id;
   name;
@@ -66,17 +75,18 @@ const riskKeys = [
   "fireRisk.extreme",
 ];
 
-const nextUpdateDelay = 60;
+const nextUpdateDelayInMinute = 60;
 var fireRisks = [];
 var lastUpdate;
 var nextUpdateAt = new Date();
 var regions = [];
+var testRisk = 0;
 
-// Firts time fireRisk array initialization
+// First time fireRisk array initialization
 getRiskZones();
 
 // Set fireRisks to be periodically updated
-setInterval(getRiskZones, 10000);
+setInterval(getRiskZones, 60000);
 
 // Set routes
 router.get("/fire-risks", function (req, res, next) {
@@ -84,13 +94,20 @@ router.get("/fire-risks", function (req, res, next) {
 });
 
 router.get("/fire-risks/:id", function (req, res, next) {
-  const fireRisk = fireRisks.find((fr) => fr.id === parseInt(req.params.id));
-  if (!fireRisk) {
-    res
-      .status(404)
-      .send(`Unable to find fire risk for the requested id ${req.params.id}`);
+  if (req.params.id === "0") {
+    res.send(
+      new Risk(0, req.i18n.t("sopfeu:testRegionName"), new Date(), testRisk, testRisk + 1, testRisk + 2)
+    );
+    testRisk = ++testRisk % 6;
   } else {
-    res.send(fireRisk);
+    const fireRisk = fireRisks.find((fr) => fr.id === parseInt(req.params.id));
+    if (!fireRisk) {
+      res
+        .status(404)
+        .send(`Unable to find fire risk for the requested id ${req.params.id}`);
+    } else {
+      res.send(fireRisk);
+    }
   }
 });
 
@@ -99,13 +116,17 @@ router.get("/regions", function (req, res, next) {
 });
 
 router.get("/regions/:id", function (req, res, next) {
-  const region = regions.find((r) => r.id === parseInt(req.params.id));
-  if (!region) {
-    res
-      .status(404)
-      .send(`Unable to find region for the requested id ${req.params.id}`);
+  if (req.params.id === "0") {
+    res.send(new Region(0, req.i18n.t("sopfeu:testRegionName")));
   } else {
-    res.send(region);
+    const region = regions.find((r) => r.id === parseInt(req.params.id));
+    if (!region) {
+      res
+        .status(404)
+        .send(`Unable to find region for the requested id ${req.params.id}`);
+    } else {
+      res.send(region);
+    }
   }
 });
 
@@ -121,16 +142,12 @@ function getRiskZones() {
       .then((response) => {
         lastUpdate = new Date();
         nextUpdateAt = new Date();
-        nextUpdateAt.setMinutes(nextUpdateAt.getMinutes() + nextUpdateDelay);
+        nextUpdateAt.setTime(nextUpdateAt.getTime() + nextUpdateDelayInMinute * 60 * 1000);
         console.log(
           `Last update at ${lastUpdate} \nNext one schedule at ${nextUpdateAt}\n`
         );
 
         fireRisks = response.data.map((o) => {
-          // const simRiskNow = Math.floor(Math.random() * 6);
-          // const simRiskTomorrow = Math.floor(Math.random() * 6);
-          // const simRiskAfterTomorrow = Math.floor(Math.random() * 6);
-          // return new Risk(o.id, o.name, o.updatedAt, simRiskNow, simRiskTomorrow, simRiskAfterTomorrow);
           return new Risk(
             o.id,
             o.name,
@@ -142,10 +159,7 @@ function getRiskZones() {
         });
 
         regions = response.data.map((o) => {
-          return {
-            id: o.id,
-            name: o.name,
-          };
+          return new Region(o.id, o.name);
         });
       })
       .catch((error) => {
