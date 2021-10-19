@@ -30,7 +30,7 @@ const i18nextOptions = {
   initImmediate: false,
   fallbackLng: "en",
   preload: ["en", "fr"],
-  ns: ["common"],
+  ns: ["common", "sopfeu"],
   defaultNS: "common",
   backend: {
     loadPath: "locales/{{lng}}/{{ns}}.json",
