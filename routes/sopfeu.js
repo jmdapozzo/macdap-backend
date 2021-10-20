@@ -30,17 +30,17 @@ class Risk {
     this.name = name;
     this.updatedAt = new Date(updatedAt);
     this.riskNow = riskNow;
-    this.riskNowKey = this.#getRiskKey(riskNow);
-    this.riskNowColor = this.#getRiskColor(riskNow);
+    this.riskNowKey = this.getRiskKey(riskNow);
+    this.riskNowColor = this.getRiskColor(riskNow);
     this.riskTomorrow = riskTomorrow;
-    this.riskTomorrowKey = this.#getRiskKey(riskTomorrow);
-    this.riskTomorrowColor = this.#getRiskColor(riskTomorrow);
+    this.riskTomorrowKey = this.getRiskKey(riskTomorrow);
+    this.riskTomorrowColor = this.getRiskColor(riskTomorrow);
     this.riskAfterTomorrow = riskAfterTomorrow;
-    this.riskAfterTomorrowKey = this.#getRiskKey(riskAfterTomorrow);
-    this.riskAfterTomorrowColor = this.#getRiskColor(riskAfterTomorrow);
+    this.riskAfterTomorrowKey = this.getRiskKey(riskAfterTomorrow);
+    this.riskAfterTomorrowColor = this.getRiskColor(riskAfterTomorrow);
   }
 
-  #getRiskKey(riskIndex) {
+  getRiskKey(riskIndex) {
     if (riskIndex in riskKeys) {
       return riskKeys[riskIndex];
     } else {
@@ -48,7 +48,7 @@ class Risk {
     }
   }
 
-  #getRiskColor(riskIndex) {
+  getRiskColor(riskIndex) {
     if (riskIndex in riskColors) {
       return riskColors[riskIndex];
     } else {
