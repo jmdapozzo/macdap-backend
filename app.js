@@ -15,7 +15,7 @@ const sopfeuRouter = require("./routes/sopfeu");
 const usersRouter = require("./routes/users");
 const templateRouter = require("./routes/template");
 
-const whitelist = ["http://localhost:3000"];
+const whitelist = ["http://localhost:3000", "https://macdap.net"];
 const corsOptions = {
   origin: function (origin, callback) {
     if (whitelist.indexOf(origin) !== -1 || !origin) {
