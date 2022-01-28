@@ -23,7 +23,7 @@ router.get("/", function(req, res) {
     res.send(nameplate);
 });
 
-router.get("/timezones", function(req, res, next) {
+router.get("/timezones/v1", function(req, res, next) {
     let timezones = [];
 
     timezones.push(new Timezone("timezone.utc", "UTC0"));

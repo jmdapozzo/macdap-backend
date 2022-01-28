@@ -89,11 +89,11 @@ getRiskZones();
 setInterval(getRiskZones, 60000);
 
 // Set routes
-router.get("/fire-risks", function(req, res, next) {
+router.get("/fire-risks/v1", function(req, res, next) {
     res.send(fireRisks);
 });
 
-router.get("/fire-risks/:id", function(req, res, next) {
+router.get("/fire-risks/v1/:id", function(req, res, next) {
     if (req.params.id === "0") {
         res.send(
             new Risk(0, req.i18n.t("sopfeu:testRegionName"), new Date(), testRisk, testRisk + 1, testRisk + 2)
@@ -111,11 +111,11 @@ router.get("/fire-risks/:id", function(req, res, next) {
     }
 });
 
-router.get("/regions", function(req, res, next) {
+router.get("/regions/v1", function(req, res, next) {
     res.send(regions);
 });
 
-router.get("/regions/:id", function(req, res, next) {
+router.get("/regions/v1/:id", function(req, res, next) {
     if (req.params.id === "0") {
         res.send(new Region(0, req.i18n.t("sopfeu:testRegionName")));
     } else {
@@ -130,7 +130,7 @@ router.get("/regions/:id", function(req, res, next) {
     }
 });
 
-router.get("/risk-colors", function(req, res, next) {
+router.get("/risk-colors/v1", function(req, res, next) {
     res.send(riskColors);
 });
 
