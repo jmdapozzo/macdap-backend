@@ -166,9 +166,7 @@ function getRiskZones() {
                 console.log(error);
             });
     } else {
-        console.log(
-            `Current date is ${currentDate} \nWaiting for ${nextUpdateAt}\n`
-        );
+        console.log(`Current date is ${currentDate} \nWaiting for ${nextUpdateAt}\n`);
     }
 }
 
