@@ -17,30 +17,30 @@ const templateRouter = require("./routes/template");
 
 const whitelist = ["http://localhost:3000", "https://macdap.net"];
 const corsOptions = {
-  origin: function (origin, callback) {
-    if (whitelist.indexOf(origin) !== -1 || !origin) {
-      callback(null, true);
-    } else {
-      callback(new Error("Not allowed by CORS"));
-    }
-  },
+    origin: function(origin, callback) {
+        if (whitelist.indexOf(origin) !== -1 || !origin) {
+            callback(null, true);
+        } else {
+            callback(new Error("Not allowed by CORS"));
+        }
+    },
 };
 
 const i18nextOptions = {
-  initImmediate: false,
-  fallbackLng: "en",
-  preload: ["en", "fr"],
-  ns: ["common", "sopfeu"],
-  defaultNS: "common",
-  backend: {
-    loadPath: "locales/{{lng}}/{{ns}}.json",
-  },
+    initImmediate: false,
+    fallbackLng: "en",
+    preload: ["en", "fr"],
+    ns: ["common", "sopfeu"],
+    defaultNS: "common",
+    backend: {
+        loadPath: "locales/{{lng}}/{{ns}}.json",
+    },
 };
 
 i18next
-  .use(i18nextHttpMiddleware.LanguageDetector)
-  .use(i18nextFsBackend)
-  .init(i18nextOptions);
+    .use(i18nextHttpMiddleware.LanguageDetector)
+    .use(i18nextFsBackend)
+    .init(i18nextOptions);
 
 const app = express();
 
@@ -56,14 +56,14 @@ app.use("/sopfeu", sopfeuRouter);
 app.use("/users", usersRouter);
 app.use("/api", templateRouter);
 
-app.use(function (req, res, next) {
-  next(createError(404));
+app.use(function(req, res, next) {
+    next(createError(404));
 });
 
-app.use(function (err, req, res, next) {
-  res.locals.message = err.message;
-  res.locals.error = req.app.get("env") === "development" ? err : {};
-  res.status(err.status || 500).send();
+app.use(function(err, req, res, next) {
+    res.locals.message = err.message;
+    res.locals.error = req.app.get("env") === "development" ? err : {};
+    res.status(err.status || 500).send();
 });
 
 module.exports = app;
