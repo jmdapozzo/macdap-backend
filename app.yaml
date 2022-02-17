@@ -13,9 +13,6 @@
 
 runtime: nodejs14
 
-env_variables:
-  SERVER_PORT: 8080
-
 handlers:
 - url: /.*
   secure: always
