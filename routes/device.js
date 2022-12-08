@@ -1,16 +1,6 @@
 const express = require("express");
 const router = express.Router();
 
-// db Connection w/ Heroku
-// const db = require('knex')({
-//   client: 'pg',
-//   connection: {
-//     connectionString: process.env.DATABASE_URL,
-//     ssl: true,
-//   }
-// });
-
-// db Connection w/ localhost
 var db = require("knex")({
   client: "pg",
   connection: {
@@ -22,15 +12,14 @@ var db = require("knex")({
   },
 });
 
-router.get("/v2", (req, res) => getTableData(req, res, db));
-router.post("/v2", (req, res) => postTableData(req, res, db));
+router.get("/v2", (req, res) => getDevices(req, res, db));
 router.post("/v2/connection", (req, res) => postDeviceConnection(req, res, db));
-router.put("/v2", (req, res) => putTableData(req, res, db));
-router.delete("/v2", (req, res) => deleteTableData(req, res, db));
+router.put("/v2", (req, res) => putDevice(req, res, db));
+router.delete("/v2", (req, res) => deleteDevice(req, res, db));
 
 module.exports = router;
 
-const getTableData = (req, res, db) => {
+const getDevices = (req, res, db) => {
   db.select("*")
     .from("vw_devices")
     .then((items) => {
@@ -39,20 +28,6 @@ const getTableData = (req, res, db) => {
       } else {
         res.json({ dataExists: "false" });
       }
-    })
-    .catch((err) => {
-      res.status(400).json({ dbError: `db error - ${err.detail}` });
-    });
-};
-
-const postTableData = (req, res, db) => {
-  const { platform_type, platform_id, title, version, build_number } = req.body;
-  const added = new Date();
-  db("testtable1")
-    .insert({ first, last, email, phone, location, hobby, added })
-    .returning("*")
-    .then((item) => {
-      res.json(item);
     })
     .catch((err) => {
       res.status(400).json({ dbError: `db error - ${err.detail}` });
@@ -80,7 +55,7 @@ const postDeviceConnection = (req, res, db) => {
     });
 };
 
-const putTableData = (req, res, db) => {
+const putDevice = (req, res, db) => {
   const { id, first, last, email, phone, location, hobby } = req.body;
   db("testtable1")
     .where({ id })
@@ -94,7 +69,7 @@ const putTableData = (req, res, db) => {
     });
 };
 
-const deleteTableData = (req, res, db) => {
+const deleteDevice = (req, res, db) => {
   const { id } = req.body;
   db("testtable1")
     .where({ id })
