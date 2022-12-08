@@ -14,26 +14,25 @@ const router = express.Router();
 var db = require("knex")({
   client: "pg",
   connection: {
-    host: "127.0.0.1",
-    user: "",
-    password: "",
-    // host: process.env.DB_HOST,
-    // user: process.env.DB_USER,
-    // password: process.env.DB_PASS,
-    database: "macdap-1",
+    host: process.env.PGHOST,
+    port: process.env.PGPORT,
+    user: process.env.PGUSER,
+    password: process.env.PGPASSWORD,
+    database: process.env.PGDATABASE
   },
 });
 
-router.get("/", (req, res) => getTableData(req, res, db));
-router.post("/", (req, res) => postTableData(req, res, db));
-router.put("/", (req, res) => putTableData(req, res, db));
-router.delete("/", (req, res) => deleteTableData(req, res, db));
+router.get("/v2", (req, res) => getTableData(req, res, db));
+router.post("/v2", (req, res) => postTableData(req, res, db));
+router.post("/v2/connection", (req, res) => postDeviceConnection(req, res, db));
+router.put("/v2", (req, res) => putTableData(req, res, db));
+router.delete("/v2", (req, res) => deleteTableData(req, res, db));
 
 module.exports = router;
 
 const getTableData = (req, res, db) => {
   db.select("*")
-    .from("testtable1")
+    .from("vw_devices")
     .then((items) => {
       if (items.length) {
         res.json(items);
@@ -47,7 +46,7 @@ const getTableData = (req, res, db) => {
 };
 
 const postTableData = (req, res, db) => {
-  const { first, last, email, phone, location, hobby } = req.body;
+  const { platform_type, platform_id, title, version, build_number } = req.body;
   const added = new Date();
   db("testtable1")
     .insert({ first, last, email, phone, location, hobby, added })
@@ -57,6 +56,27 @@ const postTableData = (req, res, db) => {
     })
     .catch((err) => {
       res.status(400).json({ dbError: `db error - ${err.detail}` });
+    });
+};
+
+const postDeviceConnection = (req, res, db) => {
+  const { platform_type, platform_id, title, version, build_number } = req.body;
+  db.raw("call sp_device_connection(?, ?, ?, ?, ?)", [
+    platform_type,
+    platform_id,
+    title,
+    version,
+    build_number,
+  ])
+    .then(() => {
+      res.json({ postDeviceConnection: "true" });
+    })
+    .catch((err) => {
+      res
+        .status(400)
+        .json({
+          dbError: `call sp_device_connection(${platform_type}, ${platform_id}, ${title}, ${version}, ${build_number}) - ${err.detail}`,
+        });
     });
 };
 
