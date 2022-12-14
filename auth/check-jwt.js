@@ -1,7 +1,7 @@
-const jwt = require("express-jwt");
+const { expressjwt } = require("express-jwt");
 const jwksRsa = require("jwks-rsa");
 
-const checkJwt = jwt({
+const checkJwt = expressjwt({
   secret: jwksRsa.expressJwtSecret({
     cache: true,
     rateLimit: true,
