@@ -17,7 +17,7 @@ const getInfo = (req, res, next) => {
     brand: req.i18n.t("brand"),
     applicationName: req.i18n.t("applicationName"),
     language: req.i18n.t("language"),
-    version: "0.0.0",
+    version: process.env.VERSION,
     versionDate: "",
   };
   res.send(nameplate);
