@@ -1,5 +1,8 @@
 const express = require("express");
 const router = express.Router();
+const checkJwtBackend = require("../auth/check-jwt-backend");
+const checkJwtBackendIot = require("../auth/check-jwt-backend-iot");
+const { requiredScopes } = require("express-oauth2-jwt-bearer");
 
 var db = require("knex")({
   client: "pg",
@@ -8,18 +11,11 @@ var db = require("knex")({
     port: process.env.PGPORT,
     user: process.env.PGUSER,
     password: process.env.PGPASSWORD,
-    database: process.env.PGDATABASE
+    database: process.env.PGDATABASE,
   },
 });
 
-router.get("/v2", (req, res) => getDevices(req, res, db));
-router.post("/v2/connection", (req, res) => postDeviceConnection(req, res, db));
-router.put("/v2", (req, res) => putDevice(req, res, db));
-router.delete("/v2", (req, res) => deleteDevice(req, res, db));
-
-module.exports = router;
-
-const getDevices = (req, res, db) => {
+const getDevices = (req, res, next, db) => {
   db.select("*")
     .from("vw_devices")
     .then((items) => {
@@ -36,6 +32,7 @@ const getDevices = (req, res, db) => {
 
 const postDeviceConnection = (req, res, db) => {
   const { platform_type, platform_id, title, version, build_number } = req.body;
+  console.log(`Connection from ${platform_type}:${platform_id} running application ${title}`);
   db.raw("call sp_device_connection(?, ?, ?, ?, ?)", [
     platform_type,
     platform_id,
@@ -47,11 +44,9 @@ const postDeviceConnection = (req, res, db) => {
       res.json({ postDeviceConnection: "true" });
     })
     .catch((err) => {
-      res
-        .status(400)
-        .json({
-          dbError: `call sp_device_connection(${platform_type}, ${platform_id}, ${title}, ${version}, ${build_number}) - ${err.detail}`,
-        });
+      res.status(400).json({
+        dbError: `call sp_device_connection(${platform_type}, ${platform_id}, ${title}, ${version}, ${build_number}) - ${err.detail}`,
+      });
     });
 };
 
@@ -81,3 +76,12 @@ const deleteDevice = (req, res, db) => {
       res.status(400).json({ dbError: `db error - ${err.detail}` });
     });
 };
+
+const checkScopes = requiredScopes(["read:messages"]);
+
+router.get("/v2", checkJwtBackend, (req, res, next) => getDevices(req, res, next, db));
+router.post("/v2/connection", checkJwtBackendIot, (req, res) => postDeviceConnection(req, res, db));
+router.put("/v2", (req, res) => putDevice(req, res, db));
+router.delete("/v2", (req, res) => deleteDevice(req, res, db));
+
+module.exports = router;

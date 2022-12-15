@@ -1,35 +1,37 @@
 const express = require("express");
 const router = express.Router();
-const checkJwt = require("../auth/check-jwt");
-const jwtAuthz = require("express-jwt-authz");
+const checkJwtBackend = require("../auth/check-jwt-backend");
+const checkJwtBackendIot = require("../auth/check-jwt-backend-iot");
+const { requiredScopes } = require("express-oauth2-jwt-bearer");
 
-const getPublic = (req, res) => {
+const getPublic = (req, res, next) => {
   res.json({
     message:
       "Hello from a public endpoint! You don't need to be authenticated to see this.",
   });
 };
 
-const getPrivate = (req, res) => {
+const getPrivate = (req, res, next) => {
   res.json({
     message:
       "Hello from a private endpoint! You need to be authenticated to see this.",
   });
 };
 
-const getPrivateScoped = (req, res) => {
+const getPrivateScoped = (req, res, next) => {
   res.json({
     message:
       "Hello from a private endpoint! You need to be authenticated and have a scope of read:messages to see this.",
   });
 };
 
-const checkScopes = jwtAuthz(["read:messages"]);
+const checkScopes = requiredScopes(["read:messages"]);
 
-router.get("/public", (req, res) => getPublic(req, res));
-router.get("/private", checkJwt, (req, res) => getPrivate(req, res));
-router.get("/private-scoped", checkJwt, jwtAuthz, (req, res) =>
-  getPrivateScoped(req, res)
+router.get("/public", (req, res, next) => getPublic(req, res, next));
+router.get("/private", checkJwtBackend, (req, res, next) => getPrivate(req, res, next));
+router.get("/iot/private", checkJwtBackendIot, (req, res, next) => getPrivate(req, res, next));
+router.get("/private-scoped", checkJwtBackend, checkScopes, (req, res, next) =>
+  getPrivateScoped(req, res, next)
 );
 
 module.exports = router;
