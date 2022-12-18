@@ -13,6 +13,7 @@ const logger = require("morgan");
 const indexRouter = require("./routes/index");
 const sopfeuRouter = require("./routes/sopfeu");
 const deviceRouter = require("./routes/device");
+const managementRouter = require("./routes/management");
 const templateRouter = require("./routes/template");
 
 const whitelist = ["http://localhost:3000", "https://macdap.net"];
@@ -54,6 +55,7 @@ app.use(i18nextHttpMiddleware.handle(i18next));
 app.use("/", indexRouter);
 app.use("/sopfeu", sopfeuRouter);
 app.use("/device", deviceRouter);
+app.use("/management", managementRouter);
 app.use("/api", templateRouter);
 
 app.use(function(req, res, next) {
