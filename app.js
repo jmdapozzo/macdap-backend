@@ -16,7 +16,7 @@ const deviceRouter = require("./routes/device");
 const managementRouter = require("./routes/management");
 const templateRouter = require("./routes/template");
 
-const whitelist = ["http://localhost:3000", "https://macdap.net", "https://staging.macdap.net"];
+const whitelist = ["http://localhost:3000", "https://macdap.net", "https://staging.macdap.net", "https://production.macdap.net"];
 const corsOptions = {
     origin: function(origin, callback) {
         if (whitelist.indexOf(origin) !== -1 || !origin) {
