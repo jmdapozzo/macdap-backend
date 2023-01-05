@@ -11,6 +11,14 @@ class Timezone {
   }
 }
 
+const getUI = (req, res, next) => {
+  try {
+    res.render("index", { title: "Express" });
+  } catch (error) {
+    next(error);
+  }
+};
+
 const getInfo = (req, res, next) => {
   const nameplate = {
     company: req.i18n.t("company"),
@@ -37,7 +45,8 @@ const getTimeZones = (req, res, next) => {
   res.send(timezones);
 };
 
-router.get("/", (req, res, next) => getInfo(req, res, next));
+router.get("/", (req, res, next) => getUI(req, res, next));
+router.get("/info", (req, res, next) => getInfo(req, res, next));
 router.get("/timezones/v1", (req, res, next) => getTimeZones(req, res, next));
 
 module.exports = router;

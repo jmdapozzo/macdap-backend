@@ -1,0 +1,33 @@
+{
+    "name": "Sopfeu",
+    "version": "1.1.7",
+    "new_install_prompt_erase": true,
+    "builds": [
+        {
+            "chipFamily": "ESP32",
+            "improv": false,
+            "parts": [
+                {
+                    "path": "bootloader_dio_40m.bin",
+                    "offset": 4096
+                },
+                {
+                    "path": "sopfeu.1.1.7.partitions.bin",
+                    "offset": 32768
+                },
+                {
+                    "path": "boot_app0.bin",
+                    "offset": 57344
+                },
+                {
+                    "path": "sopfeu.1.1.7.firmware.bin",
+                    "offset": 65536
+                },
+                {
+                    "path": "spiffs.bin",
+                    "offset": 2818048
+                }
+            ]
+        }
+    ]
+}
