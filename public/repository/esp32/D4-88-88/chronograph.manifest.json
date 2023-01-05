@@ -1,6 +1,6 @@
 {
     "name": "Chronograph",
-    "version": "1.1.7",
+    "version": "2.0.0",
     "new_install_prompt_erase": true,
     "builds": [
         {
@@ -12,7 +12,7 @@
                     "offset": 4096
                 },
                 {
-                    "path": "chronograph.1.1.7.partitions.bin",
+                    "path": "chronograph.2.0.0.partitions.bin",
                     "offset": 32768
                 },
                 {
@@ -20,7 +20,7 @@
                     "offset": 57344
                 },
                 {
-                    "path": "chronograph.1.1.7.firmware.bin",
+                    "path": "chronograph.2.0.0.firmware.bin",
                     "offset": 65536
                 },
                 {
