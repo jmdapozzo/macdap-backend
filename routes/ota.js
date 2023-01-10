@@ -12,7 +12,7 @@ const getFile = async (req, res, next) => {
         "public/repository",
         req.params[0]
       );
-      console.log(`req.hostname = ${req.get("host")}`)
+      console.log(req.headers)
       if (fs.existsSync(requestedPath) && fs.statSync(requestedPath).isFile()) {
         const user_agent = req.get("user-agent");
         if (user_agent == "ESP32-http-Update") {
