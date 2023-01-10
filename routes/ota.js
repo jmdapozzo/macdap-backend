@@ -26,7 +26,7 @@ const getFile = async (req, res, next) => {
           const sdk_version = req.get("X-Esp32-Sdk-Version");
           const mode = req.get("X-Esp32-Mode");
         } else {
-          throw new Error("The request available only from ESP32 http updater");
+          //throw new Error("The request available only from ESP32 http updater");
         }
         res.sendFile(requestedPath);
       } else {
