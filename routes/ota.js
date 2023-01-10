@@ -15,7 +15,8 @@ const getFile = async (req, res, next) => {
       console.log(req.headers)
       if (fs.existsSync(requestedPath) && fs.statSync(requestedPath).isFile()) {
         const user_agent = req.get("user-agent");
-        if (user_agent == "ESP32-http-Update") {
+        const sec_fetch_site = req.get("sec-fetch-site");
+        if ((user_agent == "ESP32-http-Update") || (sec_fetch_site == "same-origin")) {
           const sta_mac = req.get("X-Esp32-Sta-Mac");
           const ap_mac = req.get("X-Esp32-Ap-Mac");
           const free_space = req.get("X-Esp32-Free-Space");
@@ -26,7 +27,7 @@ const getFile = async (req, res, next) => {
           const sdk_version = req.get("X-Esp32-Sdk-Version");
           const mode = req.get("X-Esp32-Mode");
         } else {
-          //throw new Error("The request available only from ESP32 http updater");
+          throw new Error("The request available only from ESP32 http updater");
         }
         res.sendFile(requestedPath);
       } else {
