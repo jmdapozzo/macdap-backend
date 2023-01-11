@@ -1,7 +1,8 @@
 {
     "name": "Sopfeu",
     "version": "2.0.0",
-    "new_install_prompt_erase": true,
+    "new_install_prompt_erase": false,
+    "new_install_improv_wait_time": 30,
     "builds": [
         {
             "chipFamily": "ESP32",
@@ -24,7 +25,7 @@
                     "offset": 65536
                 },
                 {
-                    "path": "spiffs.bin",
+                    "path": "sopfeu.2.0.0.spiffs.bin",
                     "offset": 2818048
                 }
             ]
