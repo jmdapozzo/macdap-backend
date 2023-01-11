@@ -12,7 +12,6 @@ const getFile = async (req, res, next) => {
         "public/repository",
         req.params[0]
       );
-      console.log(req.headers)
       if (fs.existsSync(requestedPath) && fs.statSync(requestedPath).isFile()) {
         const user_agent = req.get("user-agent");
         const sec_fetch_site = req.get("sec-fetch-site");

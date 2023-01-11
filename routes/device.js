@@ -139,13 +139,19 @@ const getUpdate = (req, res, db) => {
         currentAppPlatformType,
         targetFileInfo.name
       );
-      const targetUrl =
-        req.protocol + "://" + req.get("host") + "/" + targetPath;
 
-        res.send(targetUrl);
-    } else
-    {
-      res.send()
+      response = {
+        name: targetFileInfo.name,
+        type: targetFileInfo.type,
+        date: targetFileInfo.date,
+        time: targetFileInfo.time,
+        size: targetFileInfo.size,
+        version: targetFileInfo.version.toString(),
+        url: req.protocol + "://" + req.get("host") + "/" + targetPath,
+      };
+      res.send(response);
+    } else {
+      res.send();
     }
   } catch (error) {
     next(error);
