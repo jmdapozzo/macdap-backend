@@ -1,7 +1,7 @@
 {
     "name": "Sopfeu",
     "version": "2.0.0",
-    "new_install_prompt_erase": false,
+    "new_install_prompt_erase": true,
     "new_install_improv_wait_time": 30,
     "builds": [
         {
@@ -26,7 +26,7 @@
                 },
                 {
                     "path": "sopfeu.2.0.0.spiffs.bin",
-                    "offset": 2818048
+                    "offset": 3211264
                 }
             ]
         }
