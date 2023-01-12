@@ -196,7 +196,7 @@ router.post("/v2/connection", checkJwtBackendIot, (req, res) =>
 router.get("/v2/update", checkJwtBackendIot, (req, res) =>
   getUpdate(req, res, db)
 );
-router.put("/v2", (req, res) => putDevice(req, res, db));
-router.delete("/v2", (req, res) => deleteDevice(req, res, db));
+//router.put("/v2", (req, res) => putDevice(req, res, db));
+//router.delete("/v2", (req, res) => deleteDevice(req, res, db));
 
 module.exports = router;
