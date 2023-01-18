@@ -152,9 +152,7 @@ function getRiskZones() {
         nextUpdateAt.setTime(
           nextUpdateAt.getTime() + nextUpdateDelayInMinute * 60 * 1000
         );
-        console.log(
-          `Last update at ${lastUpdate} \nNext one schedule at ${nextUpdateAt}\n`
-        );
+        //console.log(`Last update at ${lastUpdate} \nNext one schedule at ${nextUpdateAt}\n`);
 
         fireRisks = response.data.map((o) => {
           return new Risk(
@@ -175,9 +173,7 @@ function getRiskZones() {
         console.log(error);
       });
   } else {
-    console.log(
-      `Current date is ${currentDate} \nWaiting for ${nextUpdateAt}\n`
-    );
+    //console.log(`Current date is ${currentDate} \nWaiting for ${nextUpdateAt}\n`);
   }
 }
 
