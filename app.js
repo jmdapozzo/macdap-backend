@@ -65,8 +65,8 @@ app.use("/", indexRouter);
 app.use("/sopfeu", sopfeuRouter);
 app.use("/device", deviceRouter);
 app.use("/management", managementRouter);
-app.use("/", otaRouter);
 app.use("/api", templateRouter);
+app.use("/", otaRouter);
 
 app.use(function (req, res, next) {
   next(createError(404));
