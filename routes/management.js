@@ -11,7 +11,7 @@ const getAccessToken = async () => {
       console.log("Getting a new access token");
       const response = await axios.request({
         method: "POST",
-        url: "https://macdap.us.auth0.com/oauth/token",
+        url: process.env.AUTH0_ACCESS_TOKEN_URL,
         headers: { "content-type": "application/x-www-form-urlencoded" },
         data: new URLSearchParams({
           grant_type: "client_credentials",
@@ -38,7 +38,7 @@ const getUsers = async (req, res, next) => {
     var token = await getAccessToken();
     const response = await axios.request({
       method: "GET",
-      url: "https://macdap.us.auth0.com/api/v2/users",
+      url: process.env.AUTH0_AUDIENCE_MANAGEMENT + "users",
       headers: { authorization: `Bearer ${token}` },
     });
     res.send(response.data);
