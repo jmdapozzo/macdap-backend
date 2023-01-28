@@ -6,7 +6,7 @@ const semver = require("semver");
 const checkJwtBackend = require("../auth/check-jwt-backend");
 const checkJwtBackendIot = require("../auth/check-jwt-backend-iot");
 const { requiredScopes } = require("express-oauth2-jwt-bearer");
-const { send } = require("process");
+//const { send } = require("process");
 
 const esp32BaseRepository = "esp32";
 
@@ -68,7 +68,31 @@ function getFirmwareList(platformType, title) {
   return firmwareList;
 }
 
-const getDevices = (req, res, next, db) => {
+async function getVersionLockStatus(
+  platformType,
+  platformId,
+  title,
+  version,
+  buildNumber
+) {
+  let lockVersion = false;
+
+  result = await db.raw("select fnc_device_update(?, ?, ?, ?, ?)", [
+    platformType,
+    platformId,
+    title,
+    version,
+    buildNumber,
+  ]);
+
+  if (result.rows.length !== 0) {
+    lockVersion = result.rows[0].fnc_device_update;
+  }
+
+  return lockVersion;
+}
+
+function getDevices(req, res, next) {
   db.select("*")
     .from("vw_devices")
     .then((items) => {
@@ -81,9 +105,9 @@ const getDevices = (req, res, next, db) => {
     .catch((err) => {
       res.status(400).json({ dbError: `db error - ${err.detail}` });
     });
-};
+}
 
-const postDeviceConnection = (req, res, db) => {
+function postDeviceConnection(req, res, next) {
   const { platform_type, platform_id, title, version, build_number } = req.body;
   console.log(
     `Connection from ${platform_type}:${platform_id} running application ${title}`
@@ -103,15 +127,26 @@ const postDeviceConnection = (req, res, db) => {
         dbError: `call sp_device_connection(${platform_type}, ${platform_id}, ${title}, ${version}, ${build_number}) - ${err.detail}`,
       });
     });
-};
+}
 
-const getUpdate = (req, res, db) => {
+async function getUpdate(req, res, next) {
   try {
     const currentAppTitle = req.headers["macdap-app-title"];
     const currentAppVersion = req.headers["macdap-app-version"];
     const currentAppBuildNumber = req.headers["macdap-app-build-number"];
     const currentAppPlatformType = req.headers["macdap-platform-type"];
-    const currentAppPlatformId = req.headers["macdap-platform-id"];
+    const currentAppPlatformId = req.headers["macdap-platform-id"].padStart(
+      16,
+      "0"
+    );
+
+    const lockVersion = await getVersionLockStatus(
+      currentAppPlatformType,
+      currentAppPlatformId,
+      currentAppTitle,
+      currentAppVersion,
+      currentAppBuildNumber
+    );
 
     const currentVersion = semver.parse(currentAppVersion);
 
@@ -129,7 +164,11 @@ const getUpdate = (req, res, db) => {
       "^" + currentVersion.toString()
     );
 
-    if (targetVersion !== null && semver.neq(targetVersion, currentVersion)) {
+    if (
+      !lockVersion &&
+      targetVersion !== null &&
+      semver.neq(targetVersion, currentVersion)
+    ) {
       const targetFileInfo = firmwareList.find((fileInfo) => {
         return semver.eq(fileInfo.version, targetVersion);
       });
@@ -156,9 +195,9 @@ const getUpdate = (req, res, db) => {
   } catch (error) {
     next(error);
   }
-};
+}
 
-const putDevice = (req, res, db) => {
+function putDevice(req, res, next) {
   const { id, first, last, email, phone, location, hobby } = req.body;
   db("testtable1")
     .where({ id })
@@ -170,9 +209,9 @@ const putDevice = (req, res, db) => {
     .catch((err) => {
       res.status(400).json({ dbError: `db error - ${err.detail}` });
     });
-};
+}
 
-const deleteDevice = (req, res, db) => {
+function deleteDevice(req, res, next) {
   const { id } = req.body;
   db("testtable1")
     .where({ id })
@@ -183,19 +222,20 @@ const deleteDevice = (req, res, db) => {
     .catch((err) => {
       res.status(400).json({ dbError: `db error - ${err.detail}` });
     });
-};
+}
 
 const checkScopes = requiredScopes(["read:messages"]);
 
 router.get("/v2", checkJwtBackend, (req, res, next) =>
-  getDevices(req, res, next, db)
+  getDevices(req, res, next)
 );
-router.post("/v2/connection", checkJwtBackendIot, (req, res) =>
-  postDeviceConnection(req, res, db)
+router.post("/v2/connection", checkJwtBackendIot, (req, res, next) =>
+  postDeviceConnection(req, res, next)
 );
-router.get("/v2/update", checkJwtBackendIot, (req, res) =>
-  getUpdate(req, res, db)
-);
+router.get("/v2/update", checkJwtBackendIot, (req, res, next) => {
+  getUpdate(req, res, next);
+});
+
 //router.put("/v2", (req, res) => putDevice(req, res, db));
 //router.delete("/v2", (req, res) => deleteDevice(req, res, db));
 
