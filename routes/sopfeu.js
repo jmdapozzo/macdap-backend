@@ -81,7 +81,7 @@ var fireRisks = [];
 var lastUpdate;
 var nextUpdateAt = new Date();
 var regions = [];
-var testRisk = 0;
+var lastTestRisk = 0;
 
 // First time fireRisk array initialization
 getRiskZones();
@@ -95,6 +95,14 @@ const getFireRisks = (req, res, next) => {
 
 const getFireRisk = (req, res, next) => {
   if (req.params.id === "0") {
+    let testRisk = req.params.currentRisk;
+    if (testRisk === undefined) {
+      testRisk = lastTestRisk;
+      lastTestRisk = ++lastTestRisk % 6;
+    } else {
+      testRisk = ++testRisk % 6;
+    }
+
     res.send(
       new Risk(
         0,
@@ -105,7 +113,6 @@ const getFireRisk = (req, res, next) => {
         testRisk + 2
       )
     );
-    testRisk = ++testRisk % 6;
   } else {
     const fireRisk = fireRisks.find((fr) => fr.id === parseInt(req.params.id));
     if (!fireRisk) {
@@ -179,6 +186,7 @@ function getRiskZones() {
 
 router.get("/fire-risks/v1", (req, res, next) => getFireRisks(req, res, next));
 router.get("/fire-risks/v1/:id", (req, res, next) => getFireRisk(req, res, next));
+router.get("/fire-risks/v1/:id/:currentRisk", (req, res, next) => getFireRisk(req, res, next));
 router.get("/regions/v1", (req, res, next) => getRegions(req, res, next));
 router.get("/regions/v1/:id", (req, res, next) => getRegion(req, res, next));
 router.get("/risk-colors/v1", (req, res, next) => getRiskColors(req, res, next));
