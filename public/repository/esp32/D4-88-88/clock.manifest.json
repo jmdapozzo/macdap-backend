@@ -1,6 +1,6 @@
 {
     "name": "Clock",
-    "version": "2.0.0",
+    "version": "2.0.2",
     "new_install_prompt_erase": true,
     "new_install_improv_wait_time": 30,
     "builds": [
@@ -13,7 +13,7 @@
                     "offset": 4096
                 },
                 {
-                    "path": "clock.2.0.0.partitions.bin",
+                    "path": "clock.2.0.2.partitions.bin",
                     "offset": 32768
                 },
                 {
@@ -21,11 +21,11 @@
                     "offset": 57344
                 },
                 {
-                    "path": "clock.2.0.0.firmware.bin",
+                    "path": "clock.2.0.2.firmware.bin",
                     "offset": 65536
                 },
                 {
-                    "path": "clock.2.0.0.spiffs.bin",
+                    "path": "clock.2.0.2.spiffs.bin",
                     "offset": 3211264
                 }
             ]
