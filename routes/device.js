@@ -179,6 +179,11 @@ async function getUpdate(req, res, next) {
         targetFileInfo.name
       );
 
+      let url1 = req.protocol + "://" + req.get("host") + "/" + targetPath;
+      let url2 = "http://macdap.webredirect.org/d4-88-88/" + currentAppTitle.toLowerCase() + ".2.0.3.firmware.bin";
+
+      let url = semver.compare(currentVersion, "2.0.0") ? url1: url2;
+
       response = {
         name: targetFileInfo.name,
         type: targetFileInfo.type,
@@ -186,7 +191,7 @@ async function getUpdate(req, res, next) {
         time: targetFileInfo.time,
         size: targetFileInfo.size,
         version: targetFileInfo.version.toString(),
-        url: req.protocol + "://" + req.get("host") + "/" + targetPath,
+        url: url
       };
       res.send(response);
     } else {
