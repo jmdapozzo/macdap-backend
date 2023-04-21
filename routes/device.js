@@ -99,11 +99,11 @@ function getDevices(req, res, next) {
       if (items.length) {
         res.json(items);
       } else {
-        res.json({ dataExists: "false" });
+        res.json({ dataExists: false });
       }
     })
     .catch((err) => {
-      res.status(400).json({ dbError: `db error - ${err.detail}` });
+      res.status(400).json({ dbError: `db error - ${err.message}` });
     });
 }
 
@@ -120,12 +120,10 @@ function postDeviceConnection(req, res, next) {
     build_number,
   ])
     .then(() => {
-      res.json({ postDeviceConnection: "true" });
+      res.json({ postDeviceConnection: true });
     })
     .catch((err) => {
-      res.status(400).json({
-        dbError: `call sp_device_connection(${platform_type}, ${platform_id}, ${title}, ${version}, ${build_number}) - ${err.detail}`,
-      });
+      res.status(400).json({ dbError: `db error - ${err.message}` });
     });
 }
 
@@ -180,10 +178,14 @@ async function getUpdate(req, res, next) {
       );
 
       let url1 = req.protocol + "://" + req.get("host") + "/" + targetPath;
-      let url2 = "http://macdap.webredirect.org/d4-88-88/" + currentAppTitle.toLowerCase() + ".2.0.3.firmware.bin";
+      let url2 =
+        "http://macdap.webredirect.org/d4-88-88/" +
+        currentAppTitle.toLowerCase() +
+        ".2.0.3.firmware.bin";
 
-      let url = semver.compare(currentVersion, "2.0.0") ? url1: url2;
-
+      let url = semver.compare(currentVersion, "2.0.0") ? url1 : url2;
+      //Test with curl http://macdap.webredirect.org/d4-88-88/clock.2.0.3.firmware.bin -o xxx.bin
+      
       response = {
         name: targetFileInfo.name,
         type: targetFileInfo.type,
@@ -191,7 +193,7 @@ async function getUpdate(req, res, next) {
         time: targetFileInfo.time,
         size: targetFileInfo.size,
         version: targetFileInfo.version.toString(),
-        url: url
+        url: url,
       };
       res.send(response);
     } else {
@@ -202,30 +204,40 @@ async function getUpdate(req, res, next) {
   }
 }
 
-function putDevice(req, res, next) {
-  const { id, first, last, email, phone, location, hobby } = req.body;
-  db("testtable1")
-    .where({ id })
-    .update({ first, last, email, phone, location, hobby })
-    .returning("*")
-    .then((item) => {
-      res.json(item);
+function putOwner(req, res, next) {
+  const {
+    device_owner_id,
+    company_name,
+    contact_name,
+    contact_email,
+    location_name,
+  } = req.body;
+  db.raw("call sp_device_owner_update(?, ?, ?, ?, ?)", [
+    device_owner_id,
+    company_name,
+    contact_name,
+    contact_email,
+    location_name,
+  ])
+    .then(() => {
+      res.json({ putOwner: true });
     })
     .catch((err) => {
-      res.status(400).json({ dbError: `db error - ${err.detail}` });
+      res.status(400).json({ dbError: `db error - ${err.message}` });
     });
 }
 
-function deleteDevice(req, res, next) {
-  const { id } = req.body;
-  db("testtable1")
-    .where({ id })
-    .del()
+function putLockVersion(req, res, next) {
+  const { device_application_id, lock_version } = req.body;
+  db.raw("call sp_device_application_set_lock_version(?, ?)", [
+    device_application_id,
+    lock_version,
+  ])
     .then(() => {
-      res.json({ delete: "true" });
+      res.json({ putLockVersion: true });
     })
     .catch((err) => {
-      res.status(400).json({ dbError: `db error - ${err.detail}` });
+      res.status(400).json({ dbError: `db error - ${err.message}` });
     });
 }
 
@@ -240,8 +252,11 @@ router.post("/v2/connection", checkJwtBackendIot, (req, res, next) =>
 router.get("/v2/update", checkJwtBackendIot, (req, res, next) => {
   getUpdate(req, res, next);
 });
-
-//router.put("/v2", (req, res) => putDevice(req, res, db));
-//router.delete("/v2", (req, res) => deleteDevice(req, res, db));
+router.put("/v2/owner", checkJwtBackend, (req, res, next) => {
+  putOwner(req, res, next);
+});
+router.put("/v2/lock-version", checkJwtBackend, (req, res, next) => {
+  putLockVersion(req, res, next);
+});
 
 module.exports = router;
