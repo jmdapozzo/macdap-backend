@@ -184,9 +184,10 @@ async function getUpdate(req, res, next) {
         ".2.0.3.firmware.bin";
 
       let url = semver.compare(currentVersion, "2.0.0") ? url1 : url2;
+      //ssh sshd@nas.local
       //Test with curl http://macdap.webredirect.org/d4-88-88/clock.2.0.3.firmware.bin -o xxx.bin
       //Setup ex2 https://community.wd.com/t/share-your-files-with-friends-using-http-links/98341
-      //ln -s /mnt/HD/HD_a2/Development/D4-88-88 /var/www/d4-88=88
+      //ln -s /mnt/HD/HD_a2/Development/D4-88-88 /var/www/d4-88-88      
             
       response = {
         name: targetFileInfo.name,
