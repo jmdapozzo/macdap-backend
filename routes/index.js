@@ -15,7 +15,6 @@ class Timezone {
 const getUI = (req, res, next) => {
   try {
     res.sendFile(path.join(__dirname, '../index.html'));
-    //res.render("index", { title: "Express" });
   } catch (error) {
     next(error);
   }

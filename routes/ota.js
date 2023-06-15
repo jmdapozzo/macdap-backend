@@ -3,33 +3,77 @@ var express = require("express");
 var router = express.Router();
 const fs = require("fs");
 const path = require("path");
+const axios = require('axios');
+const { Octokit } = require("octokit");
 
-const publicPath = path.join(
-  process.cwd(),
-  "public"
-);
-
-if (!fs.existsSync(publicPath)){
-  fs.mkdirSync(publicPath);
-}
+const octokit = new Octokit({
+  auth: process.env.GITHUB
+})
 
 const repositoryPath = path.join(
-  publicPath,
-  "repository"
+  process.cwd(),
+  "public/repository"
 );
 
 if (!fs.existsSync(repositoryPath)){
-  fs.mkdirSync(repositoryPath);
+  fs.mkdirSync(repositoryPath, { recursive: true });
+}
+
+async function getGITfile (file) {
+  const response = await octokit.request('GET /repos/{owner}/{repo}/contents/{path}', {
+    owner: 'jmdapozzo',
+    repo: 'firmware-updates',
+    path: file,
+    headers: {
+      'X-GitHub-Api-Version': '2022-11-28'
+    }
+  });
+  return response.data;
+};
+
+async function downloadFile (url, path) {  
+  const writer = fs.createWriteStream(path)
+
+  const response = await axios({
+    url,
+    method: 'GET',
+    responseType: 'stream'
+  })
+
+  response.data.pipe(writer)
+
+  return new Promise((resolve, reject) => {
+    writer.on('finish', resolve)
+    writer.on('error', reject)
+  })
 }
 
 const getFile = async (req, res, next) => {
   try {
     if (req.params[0]) {
+      const filePath = req.params[0];
+      const fileName = path.parse(filePath).base
+      const fileDir = path.parse(filePath).dir;
       const requestedPath = path.join(
         repositoryPath,
-        req.params[0]
+        fileDir
       );
-      if (fs.existsSync(requestedPath) && fs.statSync(requestedPath).isFile()) {
+      if (!fs.existsSync(requestedPath)){
+        fs.mkdirSync(requestedPath, { recursive: true });
+      }
+
+      const requestedFile = path.join(
+        requestedPath,
+        fileName
+      );
+
+      if (!fs.existsSync(requestedFile)){
+        const fileProperties = await getGITfile(filePath);
+        console.log("Getting " + fileProperties.download_url + " into " + filePath);
+        await downloadFile(fileProperties.download_url, requestedFile);
+      }
+
+      if (fs.existsSync(requestedFile) && fs.statSync(requestedFile).isFile()) {
         const user_agent = req.get("user-agent");
         const sec_fetch_site = req.get("sec-fetch-site");
         if ((user_agent == "ESP32-http-Update") || (sec_fetch_site == "same-origin")) {
@@ -45,7 +89,7 @@ const getFile = async (req, res, next) => {
         } else {
           throw new Error("The request available only from ESP32 http updater");
         }
-        res.sendFile(requestedPath);
+        res.sendFile(requestedFile);
       } else {
         next(createError(404));
       }

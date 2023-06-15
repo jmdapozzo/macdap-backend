@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const fs = require("fs");
 const path = require("path");
-const Axios = require('axios');
+const axios = require('axios');
 const semver = require("semver");
 const checkJwtBackend = require("../auth/check-jwt-backend");
 const checkJwtBackendIot = require("../auth/check-jwt-backend-iot");
@@ -15,31 +15,14 @@ const octokit = new Octokit({
   auth: process.env.GITHUB
 })
 
-const publicPath = path.join(
-  process.cwd(),
-  "public"
-);
-
-if (!fs.existsSync(publicPath)){
-  fs.mkdirSync(publicPath);
-}
-
-const repositoryPath = path.join(
-  publicPath,
-  "repository"
-);
-
-if (!fs.existsSync(repositoryPath)){
-  fs.mkdirSync(repositoryPath);
-}
-
 const esp32BaseRepositoryPath = path.join(
-  repositoryPath,
+  process.cwd(),
+  "public/repository",
   esp32BaseRepository
 );
 
 if (!fs.existsSync(esp32BaseRepositoryPath)){
-  fs.mkdirSync(esp32BaseRepositoryPath);
+  fs.mkdirSync(esp32BaseRepositoryPath, { recursive: true });
 }
 
 var db = require("knex")({
@@ -162,10 +145,10 @@ function postDeviceConnection(req, res, next) {
     });
 }
 
-async function downloadFile (url, repositoryPath) {  
-  const writer = fs.createWriteStream(repositoryPath)
+async function downloadFile (url, path) {  
+  const writer = fs.createWriteStream(path)
 
-  const response = await Axios({
+  const response = await axios({
     url,
     method: 'GET',
     responseType: 'stream'
