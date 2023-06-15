@@ -4,12 +4,29 @@ var router = express.Router();
 const fs = require("fs");
 const path = require("path");
 
+const publicPath = path.join(
+  process.cwd(),
+  "public"
+);
+
+if (!fs.existsSync(publicPath)){
+  fs.mkdirSync(publicPath);
+}
+
+const repositoryPath = path.join(
+  publicPath,
+  "repository"
+);
+
+if (!fs.existsSync(repositoryPath)){
+  fs.mkdirSync(repositoryPath);
+}
+
 const getFile = async (req, res, next) => {
   try {
     if (req.params[0]) {
       const requestedPath = path.join(
-        process.cwd(),
-        "public/repository",
+        repositoryPath,
         req.params[0]
       );
       if (fs.existsSync(requestedPath) && fs.statSync(requestedPath).isFile()) {
@@ -45,8 +62,7 @@ const getCatalog = async (req, res, next) => {
   try {
     if (req.query.op === "list") {
       const repositoryPath = path.join(
-        process.cwd(),
-        "public/repository",
+        repositoryPath,
         req.query.path
       );
 

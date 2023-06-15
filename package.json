@@ -1,6 +1,6 @@
 {
   "name": "macdap-backend",
-  "version": "2.3.0",
+  "version": "2.4.0",
   "private": true,
   "scripts": {
     "start": "node ./bin/www"
@@ -23,6 +23,7 @@
     "jwks-rsa": "^3.0.0",
     "knex": "^2.3.0",
     "morgan": "~1.10.0",
+    "octokit": "^2.0.19",
     "pg": "^8.8.0",
     "semver": "^7.3.8"
   }

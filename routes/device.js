@@ -2,13 +2,45 @@ const express = require("express");
 const router = express.Router();
 const fs = require("fs");
 const path = require("path");
+const Axios = require('axios');
 const semver = require("semver");
 const checkJwtBackend = require("../auth/check-jwt-backend");
 const checkJwtBackendIot = require("../auth/check-jwt-backend-iot");
 const { requiredScopes } = require("express-oauth2-jwt-bearer");
-//const { send } = require("process");
+const { Octokit } = require("octokit");
 
 const esp32BaseRepository = "esp32";
+
+const octokit = new Octokit({
+  auth: process.env.GITHUB
+})
+
+const publicPath = path.join(
+  process.cwd(),
+  "public"
+);
+
+if (!fs.existsSync(publicPath)){
+  fs.mkdirSync(publicPath);
+}
+
+const repositoryPath = path.join(
+  publicPath,
+  "repository"
+);
+
+if (!fs.existsSync(repositoryPath)){
+  fs.mkdirSync(repositoryPath);
+}
+
+const esp32BaseRepositoryPath = path.join(
+  repositoryPath,
+  esp32BaseRepository
+);
+
+if (!fs.existsSync(esp32BaseRepositoryPath)){
+  fs.mkdirSync(esp32BaseRepositoryPath);
+}
 
 var db = require("knex")({
   client: "pg",
@@ -21,35 +53,38 @@ var db = require("knex")({
   },
 });
 
-function getRepositoryFileList(subDirectory) {
-  const repositoryPath = path.join(
-    process.cwd(),
-    "public/repository",
-    subDirectory
-  );
+async function getGITfileList (subDirectory) {
+    const response = await octokit.request('GET /repos/{owner}/{repo}/contents/{path}', {
+      owner: 'jmdapozzo',
+      repo: 'firmware-updates',
+      path: subDirectory,
+      headers: {
+        'X-GitHub-Api-Version': '2022-11-28'
+      }
+    });
 
-  const files = fs.readdirSync(repositoryPath);
-  let list = [];
-  list = files.map((file) => {
-    const stat = fs.statSync(path.join(repositoryPath, file));
-    const fileType = path.extname(file) === ".bin" ? "bin" : "file";
-    const date = new Date(stat.birthtime);
-    const fileDate = date.toDateString();
-    const fileTime = date.toTimeString();
-    return {
-      name: file,
-      type: fileType,
-      date: fileDate,
-      time: fileTime,
-      size: stat.size,
-    };
-  });
-  return list;
-}
+    let list = [];
+    list = response.data.map((file) => {
+      const fileType = path.extname(file.name) === ".bin" ? "bin" : "file";
+      const date = new Date();
+      const fileDate = date.toDateString();
+      const fileTime = date.toTimeString();
+      return {
+        name: file.name,
+        type: fileType,
+        date: fileDate,
+        time: fileTime,
+        size: file.size,
+        sha: file.sha,
+        url: file.download_url,
+      };
+    });
+    return list;
+};
 
-function getFirmwareList(platformType, title) {
+async function getFirmwareList(platformType, title) {
   const subDirectoryPath = path.join(esp32BaseRepository, platformType);
-  const fileList = getRepositoryFileList(subDirectoryPath);
+  const fileList = await getGITfileList(subDirectoryPath);
   const firmwareString = "firmware.bin";
 
   const firmwareList = fileList.filter((fileInfo) => {
@@ -127,6 +162,23 @@ function postDeviceConnection(req, res, next) {
     });
 }
 
+async function downloadFile (url, repositoryPath) {  
+  const writer = fs.createWriteStream(repositoryPath)
+
+  const response = await Axios({
+    url,
+    method: 'GET',
+    responseType: 'stream'
+  })
+
+  response.data.pipe(writer)
+
+  return new Promise((resolve, reject) => {
+    writer.on('finish', resolve)
+    writer.on('error', reject)
+  })
+}
+
 async function getUpdate(req, res, next) {
   try {
     const currentAppTitle = req.headers["macdap-app-title"];
@@ -148,7 +200,7 @@ async function getUpdate(req, res, next) {
 
     const currentVersion = semver.parse(currentAppVersion);
 
-    let firmwareList = getFirmwareList(currentAppPlatformType, currentAppTitle);
+    let firmwareList = await getFirmwareList(currentAppPlatformType, currentAppTitle);
     firmwareList.sort((fileInfo1, fileInfo2) => {
       return semver.compare(fileInfo1.version, fileInfo2.version);
     });
@@ -171,24 +223,32 @@ async function getUpdate(req, res, next) {
         return semver.eq(fileInfo.version, targetVersion);
       });
 
-      const targetPath = path.join(
+      const repositoryPlatformPath = path.join(
+        esp32BaseRepositoryPath,
+        currentAppPlatformType
+      );
+
+      if (!fs.existsSync(repositoryPlatformPath)){
+        fs.mkdirSync(repositoryPlatformPath);
+      }
+
+      const filePath = path.join(
+        repositoryPlatformPath,
+        targetFileInfo.name
+      );
+
+      if (!fs.existsSync(filePath)){
+        console.log("Getting " + targetFileInfo.url + " into " + filePath);
+        await downloadFile(targetFileInfo.url, filePath);
+      };
+
+      const urlPath = path.join(
         esp32BaseRepository,
         currentAppPlatformType,
         targetFileInfo.name
       );
+     let url = req.protocol + "://" + req.get("host") + "/" + urlPath;
 
-      let url1 = req.protocol + "://" + req.get("host") + "/" + targetPath;
-      let url2 =
-        "http://macdap.webredirect.org/d4-88-88/" +
-        currentAppTitle.toLowerCase() +
-        ".2.0.3.firmware.bin";
-
-      let url = semver.compare(currentVersion, "2.0.0") ? url1 : url2;
-      //ssh sshd@nas.local
-      //Test with curl http://macdap.webredirect.org/d4-88-88/clock.2.0.3.firmware.bin -o xxx.bin
-      //Setup ex2 https://community.wd.com/t/share-your-files-with-friends-using-http-links/98341
-      //ln -s /mnt/HD/HD_a2/Development/D4-88-88 /var/www/d4-88-88      
-            
       response = {
         name: targetFileInfo.name,
         type: targetFileInfo.type,
