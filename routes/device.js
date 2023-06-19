@@ -46,8 +46,7 @@ async function getGITfileList (subDirectory) {
       }
     });
 
-    let list = [];
-    list = response.data.map((file) => {
+    let list = response.data.map((file) => {
       const fileType = path.extname(file.name) === ".bin" ? "bin" : "file";
       const date = new Date();
       const fileDate = date.toDateString();

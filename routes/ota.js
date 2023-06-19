@@ -111,8 +111,7 @@ const getCatalog = async (req, res, next) => {
       );
 
       const files = fs.readdirSync(repositoryPath);
-      let list = [];
-      list = files.map((file) => {
+      let list = files.map((file) => {
         const stat = fs.statSync(path.join(repositoryPath, file));
         const fileType = path.extname(file) === ".bin" ? "bin" : "file";
         const date = new Date(stat.birthtime);
