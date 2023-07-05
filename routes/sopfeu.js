@@ -288,6 +288,7 @@ router.get("/regions/v1", (req, res, next) => getRegions(req, res, next));
 router.get("/regions/v1/:id", (req, res, next) => getRegion(req, res, next));
 router.get("/risk-colors/v1", (req, res, next) => getRiskColors(req, res, next));
 
+router.get("/measure/v1/:longitude/:latitude", (req, res, next) => getMeasure(req, res, next));
 router.get("/measure/v2/:longitude/:latitude", checkJwtBackendIot, (req, res, next) => getMeasure(req, res, next));
 
 module.exports = router;
