@@ -109,6 +109,17 @@ async function getVersionLockStatus(
   return lockVersion;
 }
 
+const getFileList = async (req, res, next) => {
+  try {
+    let subDirectory = req.query.directory
+    let fileList = await getGITfileList(subDirectory);
+    res.send(fileList);
+  } catch (error) {
+    console.error(`get: ${error.name} ${error.message}`);
+    next(error);
+  }
+};
+
 function getDevices(req, res, next) {
   db.select("*")
     .from("vw_devices")
@@ -303,5 +314,9 @@ router.put("/v2/owner", checkJwtBackend, (req, res, next) => {
 router.put("/v2/lock-version", checkJwtBackend, (req, res, next) => {
   putLockVersion(req, res, next);
 });
+router.get("/filelist", (req, res, next) => {
+  getFileList(req, res, next);
+});
+
 
 module.exports = router;
