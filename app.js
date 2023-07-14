@@ -15,6 +15,7 @@ const sopfeuRouter = require("./routes/sopfeu");
 const deviceRouter = require("./routes/device");
 const managementRouter = require("./routes/management");
 const otaRouter = require("./routes/ota");
+const lotoRouter = require("./routes/loto");
 const templateRouter = require("./routes/template");
 
 const whitelist = [
@@ -65,6 +66,7 @@ app.use("/", indexRouter);
 app.use("/sopfeu", sopfeuRouter);
 app.use("/device", deviceRouter);
 app.use("/management", managementRouter);
+app.use("/Loto", lotoRouter);
 app.use("/api", templateRouter);
 app.use("/", otaRouter);
 
