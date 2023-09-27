@@ -15,7 +15,6 @@ const sopfeuRouter = require("./routes/sopfeu");
 const deviceRouter = require("./routes/device");
 const managementRouter = require("./routes/management");
 const otaRouter = require("./routes/ota");
-const lotoRouter = require("./routes/loto");
 const templateRouter = require("./routes/template");
 
 const whitelist = [
