@@ -120,7 +120,7 @@
       document.querySelectorAll('input[name="type"]').forEach(radio =>
         radio.addEventListener("change", () => {
           const button = document.querySelector('esp-web-install-button');
-          button.manifest = `./esp32/D4-88-88/${radio.value}`;
+          button.manifest = `https://raw.githubusercontent.com/jmdapozzo/firmware-updates/main/esp32/D4-88-88/${radio.value}`;
           button.classList.remove('invisible');
         }
         ));
