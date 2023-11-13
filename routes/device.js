@@ -72,8 +72,7 @@ async function getFirmwareList(platformType, title) {
   const firmwareList = fileList.filter((fileInfo) => {
     const fileName = fileInfo.name.toLowerCase();
     if (
-      fileName.startsWith(title.toLowerCase()) &&
-      fileName.endsWith(firmwareString)
+      (fileName.split(".")[0] === title.toLowerCase()) && fileName.endsWith(firmwareString)
     ) {
       const startIndex = title.toLowerCase().length + 1;
       const endIndex = fileName.indexOf("." + firmwareString);
