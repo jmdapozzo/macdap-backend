@@ -139,11 +139,14 @@ function postDeviceConnection(req, res, next) {
   console.log(
     `Connection from ${platform_type}:${platform_id} running application ${title}`
   );
+
+  const currentVersion = semver.parse(version);
+
   db.raw("call sp_device_connection(?, ?, ?, ?, ?)", [
     platform_type,
     platform_id,
     title,
-    version,
+    `${currentVersion.major}.${currentVersion.minor}.${currentVersion.patch}`,
     build_number,
   ])
     .then(() => {
@@ -182,15 +185,17 @@ async function getUpdate(req, res, next) {
       "0"
     );
 
-    const lockVersion = await getVersionLockStatus(
+    const currentVersion = semver.parse(currentAppVersion);
+
+    let lockVersion = await getVersionLockStatus(
       currentAppPlatformType,
       currentAppPlatformId,
       currentAppTitle,
-      currentAppVersion,
+      `${currentVersion.major}.${currentVersion.minor}.${currentVersion.patch}`,
       currentAppBuildNumber
     );
 
-    const currentVersion = semver.parse(currentAppVersion);
+    lockVersion = false; //remove this, only for testing
 
     let firmwareList = await getFirmwareList(currentAppPlatformType, currentAppTitle);
     firmwareList.sort((fileInfo1, fileInfo2) => {
@@ -203,13 +208,12 @@ async function getUpdate(req, res, next) {
 
     const targetVersion = semver.maxSatisfying(
       versionList,
-      "^" + currentVersion.toString()
+      `>${currentVersion.major}.${currentVersion.minor}.${currentVersion.patch}`
     );
 
     if (
       !lockVersion &&
-      targetVersion !== null &&
-      semver.neq(targetVersion, currentVersion)
+      targetVersion !== null
     ) {
       const targetFileInfo = firmwareList.find((fileInfo) => {
         return semver.eq(fileInfo.version, targetVersion);
