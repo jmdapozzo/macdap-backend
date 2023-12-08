@@ -219,32 +219,6 @@ async function getUpdate(req, res, next) {
         return semver.eq(fileInfo.version, targetVersion);
       });
 
-      const repositoryPlatformPath = path.join(
-        esp32BaseRepositoryPath,
-        currentAppPlatformType
-      );
-
-      if (!fs.existsSync(repositoryPlatformPath)){
-        fs.mkdirSync(repositoryPlatformPath);
-      }
-
-      const filePath = path.join(
-        repositoryPlatformPath,
-        targetFileInfo.name
-      );
-
-      if (!fs.existsSync(filePath)){
-        console.log("Getting " + targetFileInfo.url + " into " + filePath);
-        await downloadFile(targetFileInfo.url, filePath);
-      };
-
-      const urlPath = path.join(
-        esp32BaseRepository,
-        currentAppPlatformType,
-        targetFileInfo.name
-      );
-     let url = req.protocol + "://" + req.get("host") + "/" + urlPath;
-
       response = {
         name: targetFileInfo.name,
         type: targetFileInfo.type,
@@ -252,7 +226,7 @@ async function getUpdate(req, res, next) {
         time: targetFileInfo.time,
         size: targetFileInfo.size,
         version: targetFileInfo.version.toString(),
-        url: url,
+        url: targetFileInfo.url,
       };
       res.send(response);
     } else {
