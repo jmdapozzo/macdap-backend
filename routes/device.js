@@ -195,8 +195,6 @@ async function getUpdate(req, res, next) {
       currentAppBuildNumber
     );
 
-    lockVersion = false; //remove this, only for testing
-
     let firmwareList = await getFirmwareList(currentAppPlatformType, currentAppTitle);
     firmwareList.sort((fileInfo1, fileInfo2) => {
       return semver.compare(fileInfo1.version, fileInfo2.version);
