@@ -219,7 +219,8 @@ async function getUpdate(req, res, next) {
         return semver.eq(fileInfo.version, targetVersion);
       });
 
-      let useGITDirect = (currentAppPlatformType === "mezza") || ((currentAppPlatformType === "D4-88-88") && (semver.gte(targetVersion, "2.3.0")));
+      //let useGITDirect = (currentAppPlatformType === "mezza") || ((currentAppPlatformType === "D4-88-88") && (semver.gte(targetVersion, "2.3.0")));
+      let useGITDirect = (currentAppPlatformType === "mezza") || ((currentAppPlatformType === "D4-88-88") && (semver.gte(targetVersion, "2.1.0")));
       if (!useGITDirect) {
         const repositoryPlatformPath = path.join(
           esp32BaseRepositoryPath,
