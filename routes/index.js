@@ -48,5 +48,6 @@ const getTimeZones = (req, res, next) => {
 router.get("/", (req, res, next) => getUI(req, res, next));
 router.get("/info", (req, res, next) => getInfo(req, res, next));
 router.get("/timezones/v1", (req, res, next) => getTimeZones(req, res, next));
+router.get("/favicon.ico", (req, res, next) => res.status(204).end());
 
 module.exports = router;
