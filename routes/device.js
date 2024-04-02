@@ -210,14 +210,14 @@ async function getUpdate(req, res, next) {
     );
 
     if (
-!lockVersion &&
+      !lockVersion &&
       targetVersion !== null
     ) {
       const targetFileInfo = firmwareList.find((fileInfo) => {
         return semver.eq(fileInfo.version, targetVersion);
       });
 
-      let useGITDirect = (currentAppPlatformType === "mezza") || ((currentAppPlatformType === "D4-88-88") && (semver.gte(currentVersion, "2.3.1")));
+      let useGITDirect = (currentAppPlatformType === "mezza") || ((currentAppPlatformType === "D4-88-88") && (semver.gte(currentVersion, "2.3.3")));
       if (!useGITDirect) {
         const repositoryPlatformPath = path.join(
           esp32BaseRepositoryPath,
