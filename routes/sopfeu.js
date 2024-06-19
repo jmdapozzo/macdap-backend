@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const {setIntervalAsync} = require('set-interval-async');
 const checkJwtBackendIot = require("../auth/check-jwt-backend-iot");
 const turf = require("@turf/turf");
 const isValidCoordinates = require("is-valid-coordinates");
@@ -121,21 +122,21 @@ const riskKeys = [
   "fireRisk.extreme",
 ];
 
-const nextUpdateDelayInMinute = 1;
+const nextUpdateDelayInMinute = 60;
 let fireRisks = [];
 let nextUpdateAt = new Date();
 let regions = [];
 let lastTestRisk = 0;
 let measures = [];
 
-// First time initialization then updated periodically
-sopfeuQuery();
-setInterval(sopfeuQuery, 1000);
+// Updated periodically the fire risks and measures
+setIntervalAsync(() => {sopfeuQuery();}, 1000);
 
 //Test points
 //const turfPointIDS = turf.point([-73.551635, 45.453351]); //ids
 //const turfPointPatricia = turf.point([-74.120374, 46.301903]); //chalet Patricia
 //const turfPointMarcel = turf.point([-75.379037, 46.418500]); //chalet Marcel
+//Example for IDS: http://localhost:3001/sopfeu/measure/v1/-73.551635/45.453351
 
 const getMeasure = (req, res, next) => {
   const longitude = Number(req.params.longitude);
@@ -231,7 +232,7 @@ async function sopfeuQuery() {
       nextUpdateAt.getTime() + nextUpdateDelayInMinute * 60 * 1000
     );
     console.log(
-      `Last update at ${lastUpdate} \nNext one schedule at ${nextUpdateAt}\n`
+      `Last update at ${lastUpdate} \nNext one schedule at ${nextUpdateAt}`
     );
 
     const riskZonesResult = await fetch(
@@ -253,8 +254,9 @@ async function sopfeuQuery() {
       regions = riskZonesData.map((o) => {
         return new Region(o.id, o.name);
       });
+
     } else {
-      console.log(riskZonesResult.statusText);
+      console.log(`Error "${riskZonesResult.statusText}" fetching risk-zones`);
     }
 
     const measuresResult = await fetch("https://cartes.sopfeu.qc.ca/measures");
@@ -272,7 +274,7 @@ async function sopfeuQuery() {
         );
       });
     } else {
-      //console.log(measuresResult.statusText);
+      console.log(`Error "${measuresResult.statusText}" fetching measures`);
     }
   } else {
     //console.log("No update needed");

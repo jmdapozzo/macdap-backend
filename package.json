@@ -27,6 +27,7 @@
     "morgan": "~1.10.0",
     "octokit": "^2.0.19",
     "pg": "^8.8.0",
-    "semver": "^7.3.8"
+    "semver": "^7.3.8",
+    "set-interval-async": "^3.0.3"
   }
 }
