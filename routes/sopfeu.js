@@ -1,9 +1,8 @@
 const express = require("express");
 const router = express.Router();
 const checkJwtBackendIot = require("../auth/check-jwt-backend-iot");
-const axios = require("axios");
-const turf = require('@turf/turf');
-const isValidCoordinates = require('is-valid-coordinates');
+const turf = require("@turf/turf");
+const isValidCoordinates = require("is-valid-coordinates");
 const createError = require("http-errors");
 
 class Region {
@@ -122,7 +121,7 @@ const riskKeys = [
   "fireRisk.extreme",
 ];
 
-const nextUpdateDelayInMinute = 60;
+const nextUpdateDelayInMinute = 1;
 let fireRisks = [];
 let nextUpdateAt = new Date();
 let regions = [];
@@ -141,10 +140,12 @@ setInterval(sopfeuQuery, 1000);
 const getMeasure = (req, res, next) => {
   const longitude = Number(req.params.longitude);
   const latitude = Number(req.params.latitude);
-  if (isValidCoordinates(longitude, latitude)){
+  if (isValidCoordinates(longitude, latitude)) {
     const point = turf.point([longitude, latitude]);
-    let restrictions = measures.map(measure => {
-      const polygon = turf.multiPolygon(measure.json.features[0].geometry.coordinates);
+    let restrictions = measures.map((measure) => {
+      const polygon = turf.multiPolygon(
+        measure.json.features[0].geometry.coordinates
+      );
       return {
         date: measure.date,
         createdAt: measure.createdAt,
@@ -153,13 +154,11 @@ const getMeasure = (req, res, next) => {
         id: measure.type.id,
         name: measure.type.name,
         order: measure.type.order,
-        restricted: turf.booleanPointInPolygon(point, polygon)
+        restricted: turf.booleanPointInPolygon(point, polygon),
       };
     });
     return res.send(restrictions);
-  }
-  else
-  {
+  } else {
     return next(createError(400, "Bad coordinates"));
   }
 };
@@ -223,7 +222,7 @@ const getRiskColors = (req, res, next) => {
   res.send(riskColors);
 };
 
-function sopfeuQuery() {
+async function sopfeuQuery() {
   const currentDate = new Date();
   if (currentDate >= nextUpdateAt) {
     const lastUpdate = new Date();
@@ -231,55 +230,56 @@ function sopfeuQuery() {
     nextUpdateAt.setTime(
       nextUpdateAt.getTime() + nextUpdateDelayInMinute * 60 * 1000
     );
-    console.log(`Last update at ${lastUpdate} \nNext one schedule at ${nextUpdateAt}\n`);
+    console.log(
+      `Last update at ${lastUpdate} \nNext one schedule at ${nextUpdateAt}\n`
+    );
 
-    axios
-      .get("https://cartes.sopfeu.qc.ca/risk-zones")
-      .then((response) => {
-        fireRisks = response.data.map((o) => {
-          return new Risk(
-            o.id,
-            o.name,
-            o.updatedAt,
-            o.riskNow,
-            o.riskTomorrow,
-            o.riskAfterTomorrow
-          );
-        });
-
-        regions = response.data.map((o) => {
-          return new Region(o.id, o.name);
-        });
-      })
-      .catch((error) => {
-        console.log(error);
+    const riskZonesResult = await fetch(
+      "https://cartes.sopfeu.qc.ca/risk-zones"
+    );
+    if (riskZonesResult.ok) {
+      const riskZonesData = await riskZonesResult.json();
+      fireRisks = riskZonesData.map((o) => {
+        return new Risk(
+          o.id,
+          o.name,
+          o.updatedAt,
+          o.riskNow,
+          o.riskTomorrow,
+          o.riskAfterTomorrow
+        );
       });
 
-      axios
-      .get("https://cartes.sopfeu.qc.ca/measures")
-      .then((response) => {
-        measures = response.data.map((o) => {
-          return new Measure(
-            o.id,
-            o.date,
-            o.createdAt,
-            o.updatedAt,
-            o.active,
-            o.type,
-            o.json
-          );
-        });
-      })
-      .catch((error) => {
-        console.log(error);
+      regions = riskZonesData.map((o) => {
+        return new Region(o.id, o.name);
       });
+    } else {
+      console.log(riskZonesResult.statusText);
+    }
+
+    const measuresResult = await fetch("https://cartes.sopfeu.qc.ca/measures");
+    if (measuresResult.ok) {
+      const measuresData = await measuresResult.json();
+      measures = measuresData.map((o) => {
+        return new Measure(
+          o.id,
+          o.date,
+          o.createdAt,
+          o.updatedAt,
+          o.active,
+          o.type,
+          o.json
+        );
+      });
+    } else {
+      //console.log(measuresResult.statusText);
+    }
   } else {
-    //console.log(`Current date is ${currentDate} \nWaiting for ${nextUpdateAt}\n`);
+    //console.log("No update needed");
   }
 }
 
-function sopfeuMeasures() {
-}
+function sopfeuMeasures() {}
 
 router.get("/fire-risks/v1", (req, res, next) => getFireRisks(req, res, next));
 router.get("/fire-risks/v1/:id", (req, res, next) => getFireRisk(req, res, next));
