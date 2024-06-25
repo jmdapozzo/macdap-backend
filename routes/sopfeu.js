@@ -223,6 +223,10 @@ const getRiskColors = (req, res, next) => {
   res.send(riskColors);
 };
 
+function sleep(millis) {
+  return new Promise(resolve => setTimeout(resolve, millis));
+}
+
 async function sopfeuQuery() {
   const currentDate = new Date();
   if (currentDate >= nextUpdateAt) {
@@ -235,49 +239,60 @@ async function sopfeuQuery() {
       `Last update at ${lastUpdate} \nNext one schedule at ${nextUpdateAt}`
     );
 
-    const riskZonesResult = await fetch(
-      "https://cartes.sopfeu.qc.ca/risk-zones"
-    );
-    if (riskZonesResult.ok) {
-      const riskZonesData = await riskZonesResult.json();
-      fireRisks = riskZonesData.map((o) => {
-        return new Risk(
-          o.id,
-          o.name,
-          o.updatedAt,
-          o.riskNow,
-          o.riskTomorrow,
-          o.riskAfterTomorrow
-        );
-      });
-
-      regions = riskZonesData.map((o) => {
-        return new Region(o.id, o.name);
-      });
-
-    } else {
-      console.log(`Error "${riskZonesResult.statusText}" fetching risk-zones`);
-    }
-
-    const measuresResult = await fetch("https://cartes.sopfeu.qc.ca/measures");
-    if (measuresResult.ok) {
-      const measuresData = await measuresResult.json();
-      measures = measuresData.map((o) => {
-        return new Measure(
-          o.id,
-          o.date,
-          o.createdAt,
-          o.updatedAt,
-          o.active,
-          o.type,
-          o.json
-        );
-      });
-    } else {
-      console.log(`Error "${measuresResult.statusText}" fetching measures`);
-    }
+    await sopfeuQueryRiskZones();
+    await sleep(1000);
+    await sopfeuQueryMeasures();
+  
   } else {
     //console.log("No update needed");
+  }
+}
+
+async function sopfeuQueryRiskZones() {
+  console.log("Fetching risk zones");
+  const riskZonesResult = await fetch(
+    "https://cartes.sopfeu.qc.ca/risk-zones"
+  );
+  if (riskZonesResult.ok) {
+    const riskZonesData = await riskZonesResult.json();
+    fireRisks = riskZonesData.map((o) => {
+      return new Risk(
+        o.id,
+        o.name,
+        o.updatedAt,
+        o.riskNow,
+        o.riskTomorrow,
+        o.riskAfterTomorrow
+      );
+    });
+
+    regions = riskZonesData.map((o) => {
+      return new Region(o.id, o.name);
+    });
+
+  } else {
+    console.log(`Error "${riskZonesResult.statusText}" fetching risk-zones`);
+  }
+}
+
+async function sopfeuQueryMeasures() {
+  console.log("Fetching measures");
+  const measuresResult = await fetch("https://cartes.sopfeu.qc.ca/measures");
+  if (measuresResult.ok) {
+    const measuresData = await measuresResult.json();
+    measures = measuresData.map((o) => {
+      return new Measure(
+        o.id,
+        o.date,
+        o.createdAt,
+        o.updatedAt,
+        o.active,
+        o.type,
+        o.json
+      );
+    });
+  } else {
+    console.log(`Error "${measuresResult.statusText}" fetching measures`);
   }
 }
 
