@@ -262,7 +262,8 @@ async function sopfeuQueryRiskZones() {
     "https://cartes.sopfeu.qc.ca/risk-zones",
     {
       headers: {
-        "Origin": "https://cartes.sopfeu.qc.ca"
+        "Access-Control-Allow-Origin": "https://cartes.sopfeu.qc.ca",
+        "Vary": "Origin"
       },
     }
 
