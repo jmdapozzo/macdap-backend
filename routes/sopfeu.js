@@ -258,16 +258,7 @@ function logRequest(req) {
 
 async function sopfeuQueryRiskZones() {
   console.log("Fetching risk zones");
-  const riskZonesResult = await fetch(
-    "https://cartes.sopfeu.qc.ca/risk-zones",
-    {
-      headers: {
-        "Access-Control-Allow-Origin": "https://cartes.sopfeu.qc.ca",
-        "Vary": "Origin"
-      },
-    }
-
-  );
+  const riskZonesResult = await fetch("https://cartes.sopfeu.qc.ca/risk-zones");
   logRequest(riskZonesResult);
   if (riskZonesResult.ok) {
     const riskZonesData = await riskZonesResult.json();
