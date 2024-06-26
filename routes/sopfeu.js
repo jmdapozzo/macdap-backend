@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const {setIntervalAsync} = require('set-interval-async');
+const { setIntervalAsync } = require("set-interval-async");
 const checkJwtBackendIot = require("../auth/check-jwt-backend-iot");
 const turf = require("@turf/turf");
 const isValidCoordinates = require("is-valid-coordinates");
@@ -130,7 +130,9 @@ let lastTestRisk = 0;
 let measures = [];
 
 // Updated periodically the fire risks and measures
-setIntervalAsync(() => {sopfeuQuery();}, 1000);
+setIntervalAsync(() => {
+  sopfeuQuery();
+}, 1000);
 
 //Test points
 //const turfPointIDS = turf.point([-73.551635, 45.453351]); //ids
@@ -224,7 +226,7 @@ const getRiskColors = (req, res, next) => {
 };
 
 function sleep(millis) {
-  return new Promise(resolve => setTimeout(resolve, millis));
+  return new Promise((resolve) => setTimeout(resolve, millis));
 }
 
 async function sopfeuQuery() {
@@ -242,23 +244,29 @@ async function sopfeuQuery() {
     await sopfeuQueryRiskZones();
     //await sleep(1000);
     //await sopfeuQueryMeasures();
-  
   } else {
     //console.log("No update needed");
   }
 }
 
 function logRequest(req) {
-  console.log(
-    `Request ${req.method} ${req.originalUrl} from ${req.ip} at ${new Date()}`
-  );
-  console.log(req);
-  console.log(req.headers);
+  if (false) {
+    console.log(req);
+    console.log(req.headers);
+  }
 }
 
 async function sopfeuQueryRiskZones() {
   console.log("Fetching risk zones");
-  const riskZonesResult = await fetch("https://cartes.sopfeu.qc.ca/risk-zones");
+  const riskZonesResult = await fetch(
+    "https://cartes.sopfeu.qc.ca/risk-zones",
+    {
+      headers: {
+        "Origin": "https://cartes.sopfeu.qc.ca"
+      },
+    }
+
+  );
   logRequest(riskZonesResult);
   if (riskZonesResult.ok) {
     const riskZonesData = await riskZonesResult.json();
@@ -276,7 +284,6 @@ async function sopfeuQueryRiskZones() {
     regions = riskZonesData.map((o) => {
       return new Region(o.id, o.name);
     });
-
   } else {
     console.log(`Error "${riskZonesResult.statusText}" fetching risk-zones`);
   }
@@ -307,11 +314,19 @@ async function sopfeuQueryMeasures() {
 function sopfeuMeasures() {}
 
 router.get("/fire-risks/v1", (req, res, next) => getFireRisks(req, res, next));
-router.get("/fire-risks/v1/:id", (req, res, next) => getFireRisk(req, res, next));
-router.get("/fire-risks/v1/:id/:currentRisk", (req, res, next) => getFireRisk(req, res, next));
+router.get("/fire-risks/v1/:id", (req, res, next) =>
+  getFireRisk(req, res, next)
+);
+router.get("/fire-risks/v1/:id/:currentRisk", (req, res, next) =>
+  getFireRisk(req, res, next)
+);
 router.get("/regions/v1", (req, res, next) => getRegions(req, res, next));
 router.get("/regions/v1/:id", (req, res, next) => getRegion(req, res, next));
-router.get("/risk-colors/v1", (req, res, next) => getRiskColors(req, res, next));
-router.get("/measure/v1/:longitude/:latitude", (req, res, next) => getMeasure(req, res, next));
+router.get("/risk-colors/v1", (req, res, next) =>
+  getRiskColors(req, res, next)
+);
+router.get("/measure/v1/:longitude/:latitude", (req, res, next) =>
+  getMeasure(req, res, next)
+);
 
 module.exports = router;
