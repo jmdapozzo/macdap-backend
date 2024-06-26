@@ -1,5 +1,7 @@
 const express = require("express");
 const router = express.Router();
+const fetch = require('node-fetch');
+const https = require('https');
 const { setIntervalAsync } = require("set-interval-async");
 const checkJwtBackendIot = require("../auth/check-jwt-backend-iot");
 const turf = require("@turf/turf");
@@ -130,7 +132,6 @@ let lastTestRisk = 0;
 let measures = [];
 
 // Updated periodically the fire risks and measures
-process.env.NODE_TLS_REJECT_UNAUTHORIZED = 0;
 setIntervalAsync(() => {
   sopfeuQuery();
 }, 1000);
@@ -243,7 +244,7 @@ async function sopfeuQuery() {
     );
 
     await sopfeuQueryRiskZones();
-    //await sleep(1000);
+    //await sleep(1000); Maybe needed when we go back to sopfeu.qc.ca
     await sopfeuQueryMeasures();
   } else {
     //console.log("No update needed");
@@ -260,7 +261,8 @@ function logRequest(req) {
 async function sopfeuQueryRiskZones() {
   console.log("Fetching risk zones");
   //const riskZonesResult = await fetch("https://cartes.sopfeu.qc.ca/risk-zones");
-  const riskZonesResult = await fetch("https://167.114.52.21/risk-zones");
+  const httpsAgent = new https.Agent({rejectUnauthorized: false,});
+  const riskZonesResult = await fetch("https://167.114.52.21/risk-zones", {agent: httpsAgent});
   logRequest(riskZonesResult);
   if (riskZonesResult.ok) {
     const riskZonesData = await riskZonesResult.json();
@@ -283,10 +285,13 @@ async function sopfeuQueryRiskZones() {
   }
 }
 
+// directe access to sopfeu.qc.ca
+// https://search.censys.io search for cartes.sopfeu.qc.ca and use OVH as the provider
 async function sopfeuQueryMeasures() {
   console.log("Fetching measures");
   //const measuresResult = await fetch("https://cartes.sopfeu.qc.ca/measures");
-  const measuresResult = await fetch("https://167.114.52.21/measures");
+  const httpsAgent = new https.Agent({rejectUnauthorized: false,});
+  const measuresResult = await fetch("https://167.114.52.21/measures", {agent: httpsAgent});
   logRequest(measuresResult);
   if (measuresResult.ok) {
     const measuresData = await measuresResult.json();
