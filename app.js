@@ -20,8 +20,8 @@ const templateRouter = require("./routes/template");
 const whitelist = [
   "http://localhost:3000",
   "https://macdap.net",
-  "https://staging.backend.macdap.net",
-  "https://production.backend.macdap.net",
+  "https://staging.macdap.net",
+  "https://production.macdap.net",
 ];
 const corsOptions = {
   origin: function (origin, callback) {
