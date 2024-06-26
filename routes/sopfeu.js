@@ -244,7 +244,7 @@ async function sopfeuQuery() {
 
     await sopfeuQueryRiskZones();
     //await sleep(1000);
-    //await sopfeuQueryMeasures();
+    await sopfeuQueryMeasures();
   } else {
     //console.log("No update needed");
   }
@@ -259,6 +259,7 @@ function logRequest(req) {
 
 async function sopfeuQueryRiskZones() {
   console.log("Fetching risk zones");
+  //const riskZonesResult = await fetch("https://cartes.sopfeu.qc.ca/risk-zones");
   const riskZonesResult = await fetch("https://167.114.52.21/risk-zones");
   logRequest(riskZonesResult);
   if (riskZonesResult.ok) {
@@ -284,7 +285,8 @@ async function sopfeuQueryRiskZones() {
 
 async function sopfeuQueryMeasures() {
   console.log("Fetching measures");
-  const measuresResult = await fetch("https://cartes.sopfeu.qc.ca/measures");
+  //const measuresResult = await fetch("https://cartes.sopfeu.qc.ca/measures");
+  const measuresResult = await fetch("https://167.114.52.21/measures");
   logRequest(measuresResult);
   if (measuresResult.ok) {
     const measuresData = await measuresResult.json();
