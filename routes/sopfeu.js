@@ -130,6 +130,7 @@ let lastTestRisk = 0;
 let measures = [];
 
 // Updated periodically the fire risks and measures
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = 0;
 setIntervalAsync(() => {
   sopfeuQuery();
 }, 1000);
@@ -258,7 +259,7 @@ function logRequest(req) {
 
 async function sopfeuQueryRiskZones() {
   console.log("Fetching risk zones");
-  const riskZonesResult = await fetch("https://cartes.sopfeu.qc.ca/risk-zones");
+  const riskZonesResult = await fetch("https://167.114.52.21/risk-zones");
   logRequest(riskZonesResult);
   if (riskZonesResult.ok) {
     const riskZonesData = await riskZonesResult.json();
