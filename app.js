@@ -56,10 +56,11 @@ app.set("view engine", "jade");
 
 morgan.token('title', function (req, res) { return req.headers['macdap-app-title'] })
 morgan.token('version', function (req, res) { return req.headers['macdap-app-version'] })
-morgan.token('platform', function (req, res) { return req.headers['macdap-platform-type'] })
+morgan.token('platformType', function (req, res) { return req.headers['macdap-platform-type'] })
+morgan.token('platformID', function (req, res) { return req.headers['macdap-platform-id'] })
 
 app.use(cors(corsOptions));
-app.use(morgan(":remote-addr :method :url :status :title :version :platform :response-time ms - :res[content-length]"));
+app.use(morgan(":method :url :status :title :version :platformType :platformID :response-time ms"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
