@@ -8,7 +8,7 @@ const cors = require("cors");
 const i18next = require("i18next");
 const i18nextFsBackend = require("i18next-fs-backend");
 const i18nextHttpMiddleware = require("i18next-http-middleware");
-const logger = require("morgan");
+const morgan = require("morgan");
 
 const indexRouter = require("./routes/index");
 const sopfeuRouter = require("./routes/sopfeu");
@@ -54,8 +54,12 @@ const app = express();
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "jade");
 
+morgan.token('title', function (req, res) { return req.headers['macdap-app-title'] })
+morgan.token('version', function (req, res) { return req.headers['macdap-app-version'] })
+morgan.token('platform', function (req, res) { return req.headers['macdap-platform-type'] })
+
 app.use(cors(corsOptions));
-app.use(logger("dev"));
+app.use(morgan(":remote-addr :method :url :status :title :version :platform :response-time ms - :res[content-length]"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
