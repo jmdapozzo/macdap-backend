@@ -168,6 +168,17 @@ const getMeasure = (req, res, next) => {
   }
 };
 
+const putFireRisks = (req, res, next) => {
+  const risks = req.body;
+
+    if (!Array.isArray(risks)) {
+        return res.status(400).send("Input must be a JSON array");
+    }
+
+    fireRisks = risks;
+    res.status(200).send("Fire risks updated successfully");
+}
+
 const getFireRisks = (req, res, next) => {
   res.send(fireRisks);
 };
@@ -314,19 +325,12 @@ async function sopfeuQueryMeasures() {
 function sopfeuMeasures() {}
 
 router.get("/fire-risks/v1", (req, res, next) => getFireRisks(req, res, next));
-router.get("/fire-risks/v1/:id", (req, res, next) =>
-  getFireRisk(req, res, next)
-);
-router.get("/fire-risks/v1/:id/:currentRisk", (req, res, next) =>
-  getFireRisk(req, res, next)
-);
+router.put("/fire-risks/v1", (req, res, next) => putFireRisks(req, res, next));
+router.get("/fire-risks/v1/:id", (req, res, next) => getFireRisk(req, res, next));
+router.get("/fire-risks/v1/:id/:currentRisk", (req, res, next) => getFireRisk(req, res, next));
 router.get("/regions/v1", (req, res, next) => getRegions(req, res, next));
 router.get("/regions/v1/:id", (req, res, next) => getRegion(req, res, next));
-router.get("/risk-colors/v1", (req, res, next) =>
-  getRiskColors(req, res, next)
-);
-router.get("/measure/v1/:longitude/:latitude", (req, res, next) =>
-  getMeasure(req, res, next)
-);
+router.get("/risk-colors/v1", (req, res, next) => getRiskColors(req, res, next));
+router.get("/measure/v1/:longitude/:latitude", (req, res, next) => getMeasure(req, res, next));
 
 module.exports = router;
