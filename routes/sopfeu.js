@@ -336,7 +336,7 @@ async function sopfeuQueryMeasures() {
 function sopfeuMeasures() {}
 
 router.get("/fire-risks/v1", (req, res, next) => getFireRisks(req, res, next));
-router.put("/fire-risks/v1", (req, res, next) => putFireRisks(req, res, next));
+router.post("/fire-risks/v1", (req, res, next) => putFireRisks(req, res, next));
 router.get("/fire-risks/v1/:id", (req, res, next) => getFireRisk(req, res, next));
 router.get("/fire-risks/v1/:id/:currentRisk", (req, res, next) => getFireRisk(req, res, next));
 router.get("/regions/v1", (req, res, next) => getRegions(req, res, next));
