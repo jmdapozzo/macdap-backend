@@ -175,7 +175,18 @@ const putFireRisks = (req, res, next) => {
         return res.status(400).send("Input must be a JSON array");
     }
 
-    fireRisks = risks;
+    updatedRisks = risks.map((o) => {
+      return new Risk(
+        o.id,
+        o.name,
+        new Date(),
+        o.riskNow,
+        o.riskTomorrow,
+        o.riskAfterTomorrow
+      );
+    });
+
+    fireRisks = updatedRisks;
     res.status(200).send("Fire risks updated successfully");
 }
 
