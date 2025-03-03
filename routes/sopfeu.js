@@ -282,9 +282,8 @@ function logRequest(req) {
 
 async function sopfeuQueryRiskZones() {
   console.log("Fetching risk zones");
-  //const riskZonesResult = await fetch("https://cartes.sopfeu.qc.ca/risk-zones");
+  const riskZonesResult = await fetch("https://cartes.sopfeu.qc.ca/risk-zones");
   const httpsAgent = new https.Agent({rejectUnauthorized: false,});
-  const riskZonesResult = await fetch("https://167.114.52.21/risk-zones", {agent: httpsAgent});
   logRequest(riskZonesResult);
   if (riskZonesResult.ok) {
     const riskZonesData = await riskZonesResult.json();
@@ -307,13 +306,10 @@ async function sopfeuQueryRiskZones() {
   }
 }
 
-// directe access to sopfeu.qc.ca
-// https://search.censys.io search for cartes.sopfeu.qc.ca and use OVH as the provider
 async function sopfeuQueryMeasures() {
   console.log("Fetching measures");
-  //const measuresResult = await fetch("https://cartes.sopfeu.qc.ca/measures");
+  const measuresResult = await fetch("https://cartes.sopfeu.qc.ca/measures");
   const httpsAgent = new https.Agent({rejectUnauthorized: false,});
-  const measuresResult = await fetch("https://167.114.52.21/measures", {agent: httpsAgent});
   logRequest(measuresResult);
   if (measuresResult.ok) {
     const measuresData = await measuresResult.json();

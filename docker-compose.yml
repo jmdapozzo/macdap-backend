@@ -1,0 +1,10 @@
+services:
+  app:
+    image: macdap-backend
+    container_name: iot-backend
+    build: .
+    ports:
+      - "3030:3000"
+    environment:
+      - NODE_ENV=${NODE_ENV}
+    restart: no
