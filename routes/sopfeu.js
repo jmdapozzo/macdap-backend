@@ -3,7 +3,6 @@ const router = express.Router();
 const fetch = require('node-fetch');
 const https = require('https');
 const { setIntervalAsync } = require("set-interval-async");
-const checkJwtBackendIot = require("../auth/check-jwt-backend-iot");
 const turf = require("@turf/turf");
 const isValidCoordinates = require("is-valid-coordinates");
 const createError = require("http-errors");

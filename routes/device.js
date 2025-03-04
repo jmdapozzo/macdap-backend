@@ -6,6 +6,7 @@ const axios = require('axios');
 const semver = require("semver");
 const checkJwtBackend = require("../auth/check-jwt-backend");
 const checkJwtBackendIot = require("../auth/check-jwt-backend-iot");
+const keycloak = require("../auth/keycloak-backend");
 const { requiredScopes } = require("express-oauth2-jwt-bearer");
 const { Octokit } = require("octokit");
 
@@ -136,11 +137,17 @@ function getDevices(req, res, next) {
 
 function postDeviceConnection(req, res, next) {
   const { platform_type, platform_id, title, version, build_number } = req.body;
-  console.log(
-    `Connection from ${platform_type}:${platform_id} running application ${title}`
-  );
+  // console.log(
+  //   `Connection from ${platform_type}:${platform_id} running application ${title}`
+  // );
 
   const currentVersion = semver.parse(version);
+
+  // console.log(
+  //   `Version ${currentVersion.major}.${currentVersion.minor}.${currentVersion.patch}`
+  // );
+  // console.log(`Platform ${platform_type}:${platform_id}`);
+  // console.log(`Title ${title}`);
 
   db.raw("call sp_device_connection(?, ?, ?, ?, ?)", [
     platform_type,
@@ -153,6 +160,7 @@ function postDeviceConnection(req, res, next) {
       res.json({ postDeviceConnection: true });
     })
     .catch((err) => {
+      console.log(`db error - ${err.message}`);
       res.status(400).json({ dbError: `db error - ${err.message}` });
     });
 }
@@ -312,7 +320,13 @@ router.get("/v2", checkJwtBackend, (req, res, next) =>
 router.post("/v2/connection", checkJwtBackendIot, (req, res, next) =>
   postDeviceConnection(req, res, next)
 );
+router.post("/v3/connection", keycloak.protect(), (req, res, next) =>
+  postDeviceConnection(req, res, next)
+);
 router.get("/v2/update", checkJwtBackendIot, (req, res, next) => {
+  getUpdate(req, res, next);
+});
+router.get("/v3/update", keycloak.protect(), (req, res, next) => {
   getUpdate(req, res, next);
 });
 router.put("/v2/owner", checkJwtBackend, (req, res, next) => {

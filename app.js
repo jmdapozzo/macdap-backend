@@ -5,6 +5,7 @@ const path = require("path");
 const fs = require("fs");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
+const keycloak = require("./auth/keycloak-backend");
 const i18next = require("i18next");
 const i18nextFsBackend = require("i18next-fs-backend");
 const i18nextHttpMiddleware = require("i18next-http-middleware");
@@ -64,6 +65,7 @@ app.use(morgan(":method :url :status :title :version :platformType :platformID :
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
+app.use(keycloak.middleware());
 app.use(i18nextHttpMiddleware.handle(i18next));
 
 app.use("/", indexRouter);
