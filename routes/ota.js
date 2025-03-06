@@ -7,7 +7,7 @@ const axios = require('axios');
 const { Octokit } = require("octokit");
 
 const octokit = new Octokit({
-  auth: process.env.GITHUB
+  auth: process.env.GITHUB_API_KEY
 })
 
 const repositoryPath = path.join(

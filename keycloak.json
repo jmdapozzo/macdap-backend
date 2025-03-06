@@ -1,8 +1,0 @@
-{
-    "realm": "macdap-dev",
-    "auth-server-url" : "http://ds923.local:3372",
-    "resource" : "macdap-dev-jwt",
-    "credentials": {
-        "secret": "xkPqLzjDsgA8BdDxsfkuzLG9UbmvKRwK"
-    }
-  }

@@ -52,9 +52,6 @@ i18next
 
 const app = express();
 
-app.set("views", path.join(__dirname, "views"));
-app.set("view engine", "jade");
-
 morgan.token('title', function (req, res) { return req.headers['macdap-app-title'] })
 morgan.token('version', function (req, res) { return req.headers['macdap-app-version'] })
 morgan.token('platformType', function (req, res) { return req.headers['macdap-platform-type'] })
@@ -65,8 +62,13 @@ app.use(morgan(":method :url :status :title :version :platformType :platformID :
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(keycloak.middleware());
 app.use(i18nextHttpMiddleware.handle(i18next));
+//app.use(keycloak.middleware());
+
+app.use((req, res, next) => {
+  console.log(`Request URL: ${req.url}`);
+  next();
+})
 
 app.use("/", indexRouter);
 app.use("/sopfeu", sopfeuRouter);
@@ -75,18 +77,25 @@ app.use("/management", managementRouter);
 app.use("/api", templateRouter);
 app.use("/", otaRouter);
 
-app.use(function (req, res, next) {
+app.use((req, res, next) => {
+  console.log(`404 Error for URL: ${req.url}`);
   next(createError(404));
 });
 
-app.use(function (err, req, res, next) {
-  // set locals, only providing error in development
+app.use((err, req, res, next) => {
+  console.log(`Error: ${err.message}`);
   res.locals.message = err.message;
   res.locals.error = req.app.get("env") === "development" ? err : {};
-
-  // render the error page
   res.status(err.status || 500);
   res.render("error");
 });
+
+console.log(`Running server on port ${process.env.PORT}`);
+
+Object.keys(process.env).forEach(function(key) {
+  console.log('export ' + key + '="' + process.env[key] +'"');
+});
+
+app.listen(process.env.PORT);
 
 module.exports = app;

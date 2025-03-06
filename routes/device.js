@@ -13,7 +13,7 @@ const { Octokit } = require("octokit");
 const esp32BaseRepository = "esp32";
 
 const octokit = new Octokit({
-  auth: process.env.GITHUB
+  auth: process.env.GITHUB_API_KEY
 })
 
 const esp32BaseRepositoryPath = path.join(
@@ -29,11 +29,11 @@ if (!fs.existsSync(esp32BaseRepositoryPath)){
 var db = require("knex")({
   client: "pg",
   connection: {
-    host: process.env.PGHOST,
-    port: process.env.PGPORT,
-    user: process.env.PGUSER,
-    password: process.env.PGPASSWORD,
-    database: process.env.PGDATABASE,
+    host: process.env.PG_HOST,
+    port: process.env.PG_PORT,
+    user: process.env.PG_USER,
+    password: process.env.PG_PASSWORD,
+    database: process.env.PG_DATABASE,
   },
 });
 
@@ -137,17 +137,10 @@ function getDevices(req, res, next) {
 
 function postDeviceConnection(req, res, next) {
   const { platform_type, platform_id, title, version, build_number } = req.body;
-  // console.log(
-  //   `Connection from ${platform_type}:${platform_id} running application ${title}`
-  // );
+  
+  console.log(`Connection from ${platform_type}:${platform_id} running application ${title}`);
 
   const currentVersion = semver.parse(version);
-
-  // console.log(
-  //   `Version ${currentVersion.major}.${currentVersion.minor}.${currentVersion.patch}`
-  // );
-  // console.log(`Platform ${platform_type}:${platform_id}`);
-  // console.log(`Title ${title}`);
 
   db.raw("call sp_device_connection(?, ?, ?, ?, ?)", [
     platform_type,
@@ -320,13 +313,19 @@ router.get("/v2", checkJwtBackend, (req, res, next) =>
 router.post("/v2/connection", checkJwtBackendIot, (req, res, next) =>
   postDeviceConnection(req, res, next)
 );
-router.post("/v3/connection", keycloak.protect(), (req, res, next) =>
+// router.post("/v3/connection", keycloak.protect(), (req, res, next) =>
+//   postDeviceConnection(req, res, next)
+// );
+router.post("/v3/connection", (req, res, next) =>
   postDeviceConnection(req, res, next)
 );
 router.get("/v2/update", checkJwtBackendIot, (req, res, next) => {
   getUpdate(req, res, next);
 });
-router.get("/v3/update", keycloak.protect(), (req, res, next) => {
+// router.get("/v3/update", keycloak.protect(), (req, res, next) => {
+//   getUpdate(req, res, next);
+// });
+router.get("/v3/update", (req, res, next) => {
   getUpdate(req, res, next);
 });
 router.put("/v2/owner", checkJwtBackend, (req, res, next) => {

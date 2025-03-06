@@ -3,17 +3,17 @@
   "version": "2.7.1",
   "private": true,
   "scripts": {
-    "start": "node ./bin/www"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node app.js"
   },
   "dependencies": {
     "@turf/turf": "^6.5.0",
     "axios": "^1.7.2",
     "cookie-parser": "~1.4.6",
     "cors": "^2.8.5",
-    "debug": "~4.3.4",
     "dotenv": "^16.0.3",
     "express": "~4.18.2",
-    "express-oauth2-jwt-bearer": "^1.2.0",
+    "express-oauth2-jwt-bearer": "^1.6.0",
     "express-session": "^1.18.1",
     "http-errors": "~2.0.0",
     "i18next": "^22.4.5",
@@ -21,8 +21,6 @@
     "i18next-fs-backend": "^2.1.0",
     "i18next-http-middleware": "^3.2.1",
     "is-valid-coordinates": "^1.0.0",
-    "jade": "^1.11.0",
-    "jade-bootstrap": "^1.0.14",
     "jwks-rsa": "^3.0.0",
     "keycloak-connect": "^26.1.1",
     "knex": "^2.3.0",
