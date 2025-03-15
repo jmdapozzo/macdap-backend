@@ -313,21 +313,21 @@ router.get("/v2", checkJwtBackend, (req, res, next) =>
 router.post("/v2/connection", checkJwtBackendIot, (req, res, next) =>
   postDeviceConnection(req, res, next)
 );
-// router.post("/v3/connection", keycloak.protect(), (req, res, next) =>
-//   postDeviceConnection(req, res, next)
-// );
-router.post("/v3/connection", (req, res, next) =>
+router.post("/v3/connection", keycloak.protect(), (req, res, next) =>
   postDeviceConnection(req, res, next)
 );
+// router.post("/v3/connection", (req, res, next) =>
+//   postDeviceConnection(req, res, next)
+// );
 router.get("/v2/update", checkJwtBackendIot, (req, res, next) => {
   getUpdate(req, res, next);
 });
-// router.get("/v3/update", keycloak.protect(), (req, res, next) => {
-//   getUpdate(req, res, next);
-// });
-router.get("/v3/update", (req, res, next) => {
+router.get("/v3/update", keycloak.protect(), (req, res, next) => {
   getUpdate(req, res, next);
 });
+// router.get("/v3/update", (req, res, next) => {
+//   getUpdate(req, res, next);
+// });
 router.put("/v2/owner", checkJwtBackend, (req, res, next) => {
   putOwner(req, res, next);
 });

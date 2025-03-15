@@ -281,54 +281,60 @@ function logRequest(req) {
 
 async function sopfeuQueryRiskZones() {
   console.log("Fetching risk zones");
-  const riskZonesResult = await fetch("https://cartes.sopfeu.qc.ca/risk-zones");
-  const httpsAgent = new https.Agent({rejectUnauthorized: false,});
-  logRequest(riskZonesResult);
-  if (riskZonesResult.ok) {
-    const riskZonesData = await riskZonesResult.json();
-    fireRisks = riskZonesData.map((o) => {
-      return new Risk(
-        o.id,
-        o.name,
-        o.updatedAt,
-        o.riskNow,
-        o.riskTomorrow,
-        o.riskAfterTomorrow
-      );
-    });
+  try {
+    const httpsAgent = new https.Agent({ rejectUnauthorized: false });
+    const riskZonesResult = await fetch("https://cartes.sopfeu.qc.ca/risk-zones", { agent: httpsAgent });
+    logRequest(riskZonesResult);
+    if (riskZonesResult.ok) {
+      const riskZonesData = await riskZonesResult.json();
+      fireRisks = riskZonesData.map((o) => {
+        return new Risk(
+          o.id,
+          o.name,
+          o.updatedAt,
+          o.riskNow,
+          o.riskTomorrow,
+          o.riskAfterTomorrow
+        );
+      });
 
-    regions = riskZonesData.map((o) => {
-      return new Region(o.id, o.name);
-    });
-  } else {
-    console.log(`Error "${riskZonesResult.statusText}" fetching risk-zones`);
+      regions = riskZonesData.map((o) => {
+        return new Region(o.id, o.name);
+      });
+    } else {
+      console.log(`Error "${riskZonesResult.statusText}" fetching risk-zones`);
+    }
+  } catch (error) {
+    console.error(`Error fetching risk zones: ${error.message}`);
   }
 }
 
 async function sopfeuQueryMeasures() {
   console.log("Fetching measures");
-  const measuresResult = await fetch("https://cartes.sopfeu.qc.ca/measures");
-  const httpsAgent = new https.Agent({rejectUnauthorized: false,});
-  logRequest(measuresResult);
-  if (measuresResult.ok) {
-    const measuresData = await measuresResult.json();
-    measures = measuresData.map((o) => {
-      return new Measure(
-        o.id,
-        o.date,
-        o.createdAt,
-        o.updatedAt,
-        o.active,
-        o.type,
-        o.json
-      );
-    });
-  } else {
-    console.log(`Error "${measuresResult.statusText}" fetching measures`);
+  try {
+    const httpsAgent = new https.Agent({ rejectUnauthorized: false });
+    const measuresResult = await fetch("https://cartes.sopfeu.qc.ca/measures", { agent: httpsAgent });
+    logRequest(measuresResult);
+    if (measuresResult.ok) {
+      const measuresData = await measuresResult.json();
+      measures = measuresData.map((o) => {
+        return new Measure(
+          o.id,
+          o.date,
+          o.createdAt,
+          o.updatedAt,
+          o.active,
+          o.type,
+          o.json
+        );
+      });
+    } else {
+      console.log(`Error "${measuresResult.statusText}" fetching measures`);
+    }
+  } catch (error) {
+    console.error(`Error fetching measures: ${error.message}`);
   }
 }
-
-function sopfeuMeasures() {}
 
 router.get("/fire-risks/v1", (req, res, next) => getFireRisks(req, res, next));
 router.post("/fire-risks/v1", (req, res, next) => putFireRisks(req, res, next));

@@ -3,6 +3,7 @@ const router = express.Router();
 const checkJwtBackend = require("../auth/check-jwt-backend");
 const checkJwtBackendIot = require("../auth/check-jwt-backend-iot");
 const { requiredScopes } = require("express-oauth2-jwt-bearer");
+const keycloak = require("../auth/keycloak-backend");
 
 const getPublic = (req, res, next) => {
   res.json({
@@ -29,9 +30,8 @@ const checkScopes = requiredScopes(["read:messages"]);
 
 router.get("/public", (req, res, next) => getPublic(req, res, next));
 router.get("/private", checkJwtBackend, (req, res, next) => getPrivate(req, res, next));
-router.get("/iot/private", checkJwtBackendIot, (req, res, next) => getPrivate(req, res, next));
-router.get("/private-scoped", checkJwtBackend, checkScopes, (req, res, next) =>
-  getPrivateScoped(req, res, next)
-);
+router.get("/private-scoped", checkJwtBackend, checkScopes, (req, res, next) => getPrivateScoped(req, res, next));
+
+router.get("/iot/private", keycloak.protect(), (req, res, next) => getPrivate(req, res, next));
 
 module.exports = router;

@@ -63,12 +63,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(i18nextHttpMiddleware.handle(i18next));
-//app.use(keycloak.middleware());
-
-app.use((req, res, next) => {
-  console.log(`Request URL: ${req.url}`);
-  next();
-})
+app.use(keycloak.middleware());
 
 app.use("/", indexRouter);
 app.use("/sopfeu", sopfeuRouter);
@@ -87,15 +82,19 @@ app.use((err, req, res, next) => {
   res.locals.message = err.message;
   res.locals.error = req.app.get("env") === "development" ? err : {};
   res.status(err.status || 500);
-  res.render("error");
+  res.json({
+    message: err.message,
+    error: err
+  });
 });
 
-console.log(`Running server on port ${process.env.PORT}`);
 
-Object.keys(process.env).forEach(function(key) {
-  console.log('export ' + key + '="' + process.env[key] +'"');
-});
+// Object.keys(process.env).forEach(function(key) {
+//   console.log('export ' + key + '="' + process.env[key] +'"');
+// });
 
-app.listen(process.env.PORT);
+const port = process.env.PORT || 3000;
+console.log(`Running server on port ${port}`);
+app.listen(port);
 
 module.exports = app;
