@@ -6,7 +6,7 @@ const axios = require('axios');
 const semver = require("semver");
 const checkJwtBackend = require("../auth/check-jwt-backend");
 const checkJwtBackendIot = require("../auth/check-jwt-backend-iot");
-const keycloak = require("../auth/keycloak-backend");
+const keycloakIot = require("../auth/keycloak-iot-device");
 const { requiredScopes } = require("express-oauth2-jwt-bearer");
 const { Octokit } = require("octokit");
 
@@ -313,7 +313,7 @@ router.get("/v2", checkJwtBackend, (req, res, next) =>
 router.post("/v2/connection", checkJwtBackendIot, (req, res, next) =>
   postDeviceConnection(req, res, next)
 );
-router.post("/v3/connection", keycloak.protect(), (req, res, next) =>
+router.post("/v3/connection", keycloakIot.protect(), (req, res, next) =>
   postDeviceConnection(req, res, next)
 );
 // router.post("/v3/connection", (req, res, next) =>
@@ -322,7 +322,7 @@ router.post("/v3/connection", keycloak.protect(), (req, res, next) =>
 router.get("/v2/update", checkJwtBackendIot, (req, res, next) => {
   getUpdate(req, res, next);
 });
-router.get("/v3/update", keycloak.protect(), (req, res, next) => {
+router.get("/v3/update", keycloakIot.protect(), (req, res, next) => {
   getUpdate(req, res, next);
 });
 // router.get("/v3/update", (req, res, next) => {
