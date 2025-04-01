@@ -5,7 +5,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node app.js",
-    "build": "docker buildx build -t jmdapozzo/macdap-backend . --platform linux/amd64,linux/arm64 && docker push jmdapozzo/macdap-backend"
+    // "build": "docker buildx build -t jmdapozzo/macdap-backend . --platform linux/amd64,linux/arm64 && docker push jmdapozzo/macdap-backend"
   },
   "dependencies": {
     "@turf/turf": "^6.5.0",
