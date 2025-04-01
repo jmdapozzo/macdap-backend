@@ -1,6 +1,9 @@
 const express = require("express");
 const router = express.Router();
 const path = require("path");
+const jwt = require('jsonwebtoken');
+const keycloakWeb = require("../auth/keycloak-web-frontend");
+const fs = require("fs");
 
 class Timezone {
   name;
@@ -45,9 +48,27 @@ const getTimeZones = (req, res, next) => {
   res.send(timezones);
 };
 
+const getMapJWT = (req, res, next) => {
+  const header = {
+    alg: "HS256",
+    typ: "JWT",
+    kid: "yourmapidkey"
+  }
+  const payload = {
+    iss: "yourteamid",
+    iat: Date.now() / 1000,
+    exp: (Date.now() / 1000) + 15778800
+  }
+
+  var privateKey = fs.readFileSync("./private.p8");
+  var token = jwt.sign(payload, privateKey, { header: header });
+  res.json({ token: token });
+}
+
 router.get("/", (req, res, next) => getUI(req, res, next));
 router.get("/info", (req, res, next) => getInfo(req, res, next));
 router.get("/timezones/v1", (req, res, next) => getTimeZones(req, res, next));
 router.get("/favicon.ico", (req, res, next) => res.status(204).end());
+router.get("/mapjwt/v1", keycloakWeb.protect(), (req, res, next) => getMapJWT(req, res, next));
 
 module.exports = router;

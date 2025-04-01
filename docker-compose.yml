@@ -4,7 +4,7 @@ services:
     image: jmdapozzo/macdap-backend
     container_name: macdap-backend
     ports:
-      - "3300:3000"
+      - "3300:3300"
     environment:
       AUTH0_ISSUER: ${AUTH0_ISSUER}
       AUTH0_AUDIENCE_BACKEND: ${AUTH0_AUDIENCE_BACKEND}

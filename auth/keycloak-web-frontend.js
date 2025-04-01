@@ -6,4 +6,5 @@ const keycloakWeb = new Keycloak({ }, {
   "resource": process.env.KEYCLOAK_CLIENT_ID_WEB
 });
 
+
 module.exports = keycloakWeb;

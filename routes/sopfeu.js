@@ -260,9 +260,7 @@ async function sopfeuQuery() {
     nextUpdateAt.setTime(
       nextUpdateAt.getTime() + nextUpdateDelayInMinute * 60 * 1000
     );
-    console.log(
-      `Last update at ${lastUpdate} \nNext one schedule at ${nextUpdateAt}`
-    );
+    console.log(`Last update at ${lastUpdate} \nNext one schedule at ${nextUpdateAt}`);
 
     await sopfeuQueryRiskZones();
     //await sleep(1000); Maybe needed when we go back to sopfeu.qc.ca
@@ -302,7 +300,7 @@ async function sopfeuQueryRiskZones() {
         return new Region(o.id, o.name);
       });
     } else {
-      console.log(`Error "${riskZonesResult.statusText}" fetching risk-zones`);
+      console.log(`Error "${riskZonesResult.statusText}  (${riskZonesResult.status})" fetching risk-zones`);
     }
   } catch (error) {
     console.error(`Error fetching risk zones: ${error.message}`);
@@ -329,7 +327,7 @@ async function sopfeuQueryMeasures() {
         );
       });
     } else {
-      console.log(`Error "${measuresResult.statusText}" fetching measures`);
+      console.log(`Error "${measuresResult.statusText} (${measuresResult.status})" fetching measures`);
     }
   } catch (error) {
     console.error(`Error fetching measures: ${error.message}`);

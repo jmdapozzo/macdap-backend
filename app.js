@@ -15,7 +15,6 @@ const morgan = require("morgan");
 const indexRouter = require("./routes/index");
 const sopfeuRouter = require("./routes/sopfeu");
 const deviceRouter = require("./routes/device");
-const managementRouter = require("./routes/management");
 const otaRouter = require("./routes/ota");
 const templateRouter = require("./routes/template");
 
@@ -70,7 +69,6 @@ app.use(keycloakWeb.middleware());
 app.use("/", indexRouter);
 app.use("/sopfeu", sopfeuRouter);
 app.use("/device", deviceRouter);
-app.use("/management", managementRouter);
 app.use("/api", templateRouter);
 app.use("/", otaRouter);
 
@@ -90,12 +88,11 @@ app.use((err, req, res, next) => {
   });
 });
 
-
 // Object.keys(process.env).forEach(function(key) {
 //   console.log('export ' + key + '="' + process.env[key] +'"');
 // });
 
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 3300;
 console.log(`Running server on port ${port}`);
 app.listen(port);
 

@@ -4,9 +4,9 @@ const fs = require("fs");
 const path = require("path");
 const axios = require('axios');
 const semver = require("semver");
-const checkJwtBackend = require("../auth/check-jwt-backend");
 const checkJwtBackendIot = require("../auth/check-jwt-backend-iot");
 const keycloakIot = require("../auth/keycloak-iot-device");
+const keycloakWeb = require("../auth/keycloak-web-frontend");
 const { requiredScopes } = require("express-oauth2-jwt-bearer");
 const { Octokit } = require("octokit");
 
@@ -138,8 +138,6 @@ function getDevices(req, res, next) {
 function postDeviceConnection(req, res, next) {
   const { platform_type, platform_id, title, version, build_number } = req.body;
   
-  console.log(`Connection from ${platform_type}:${platform_id} running application ${title}`);
-
   const currentVersion = semver.parse(version);
 
   db.raw("call sp_device_connection(?, ?, ?, ?, ?)", [
@@ -307,7 +305,7 @@ function putLockVersion(req, res, next) {
 
 const checkScopes = requiredScopes(["read:messages"]);
 
-router.get("/v2", checkJwtBackend, (req, res, next) =>
+router.get("/v3", keycloakWeb.protect(), (req, res, next) =>
   getDevices(req, res, next)
 );
 router.post("/v2/connection", checkJwtBackendIot, (req, res, next) =>
@@ -316,22 +314,16 @@ router.post("/v2/connection", checkJwtBackendIot, (req, res, next) =>
 router.post("/v3/connection", keycloakIot.protect(), (req, res, next) =>
   postDeviceConnection(req, res, next)
 );
-// router.post("/v3/connection", (req, res, next) =>
-//   postDeviceConnection(req, res, next)
-// );
 router.get("/v2/update", checkJwtBackendIot, (req, res, next) => {
   getUpdate(req, res, next);
 });
 router.get("/v3/update", keycloakIot.protect(), (req, res, next) => {
   getUpdate(req, res, next);
 });
-// router.get("/v3/update", (req, res, next) => {
-//   getUpdate(req, res, next);
-// });
-router.put("/v2/owner", checkJwtBackend, (req, res, next) => {
+router.put("/v3/owner", keycloakWeb.protect(), (req, res, next) => {
   putOwner(req, res, next);
 });
-router.put("/v2/lock-version", checkJwtBackend, (req, res, next) => {
+router.put("/v3/lock-version", keycloakWeb.protect(), (req, res, next) => {
   putLockVersion(req, res, next);
 });
 router.get("/filelist", (req, res, next) => {

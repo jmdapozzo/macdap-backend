@@ -4,11 +4,12 @@ This is a server providing a RESTful API to different resources.
 To run locally: npm start
 To build and run in Docker: docker build -t macdap-backend .
 To build, run and use database: docker compose up --build -d
-To Tag the image docker tag macdap-backend jmdapozzo/macdap-backend
-To push docker push jmdapozzo/macdap-backend
+To Tag the image: docker tag macdap-backend jmdapozzo/macdap-backend
+To push: docker push jmdapozzo/macdap-backend
 
-TO create a multi-platform image
+TO create the image, build and push
 docker buildx build -t jmdapozzo/macdap-backend . --platform linux/amd64,linux/arm64
+docker push jmdapozzo/macdap-backend
 
 
 version: "3.9"
