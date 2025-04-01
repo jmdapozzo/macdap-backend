@@ -9,8 +9,10 @@ To push: docker push jmdapozzo/macdap-backend
 
 TO create the image, build and push
 docker buildx build -t jmdapozzo/macdap-backend . --platform linux/amd64,linux/arm64
-docker push jmdapozzo/macdap-backend
+docker push jmdapozzo/macdap-
 
+Add an npm script
+"build": "docker buildx build -t jmdapozzo/macdap-backend . --platform linux/amd64,linux/arm64 && docker push jmdapozzo/macdap-backend"
 
 version: "3.9"
 services:
