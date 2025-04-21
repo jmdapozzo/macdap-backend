@@ -7,7 +7,6 @@ const semver = require("semver");
 const checkJwtBackendIot = require("../auth/check-jwt-backend-iot");
 const keycloakIot = require("../auth/keycloak-iot-device");
 const keycloakWeb = require("../auth/keycloak-web-frontend");
-const { requiredScopes } = require("express-oauth2-jwt-bearer");
 const { Octokit } = require("octokit");
 
 const esp32BaseRepository = "esp32";
@@ -137,7 +136,7 @@ function getDevices(req, res, next) {
 
 function postDeviceConnection(req, res, next) {
   const { platform_type, platform_id, title, version, build_number } = req.body;
-  
+
   const currentVersion = semver.parse(version);
 
   db.raw("call sp_device_connection(?, ?, ?, ?, ?)", [
@@ -302,8 +301,6 @@ function putLockVersion(req, res, next) {
       res.status(400).json({ dbError: `db error - ${err.message}` });
     });
 }
-
-const checkScopes = requiredScopes(["read:messages"]);
 
 router.get("/v3", keycloakWeb.protect(), (req, res, next) =>
   getDevices(req, res, next)

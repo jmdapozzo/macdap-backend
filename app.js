@@ -3,6 +3,7 @@ const express = require("express");
 require("dotenv").config();
 const path = require("path");
 const fs = require("fs");
+const fetch = require("node-fetch");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
 const keycloakIot = require("./auth/keycloak-iot-device");
@@ -12,6 +13,7 @@ const i18nextFsBackend = require("i18next-fs-backend");
 const i18nextHttpMiddleware = require("i18next-http-middleware");
 const morgan = require("morgan");
 
+const checkKeycloakServer = require("./checkKeycloakServer");
 const indexRouter = require("./routes/index");
 const sopfeuRouter = require("./routes/sopfeu");
 const deviceRouter = require("./routes/device");
@@ -23,6 +25,7 @@ const whitelist = [
   "https://macdap.net",
   "https://staging.macdap.net",
   "https://production.macdap.net",
+  "https://frontend.macdap.net",
 ];
 const corsOptions = {
   origin: function (origin, callback) {
@@ -51,6 +54,7 @@ i18next
   .init(i18nextOptions);
 
 const app = express();
+app.set("trust proxy", true);
 
 morgan.token('title', function (req, res) { return req.headers['macdap-app-title'] })
 morgan.token('version', function (req, res) { return req.headers['macdap-app-version'] })
@@ -88,9 +92,12 @@ app.use((err, req, res, next) => {
   });
 });
 
+
 // Object.keys(process.env).forEach(function(key) {
 //   console.log('export ' + key + '="' + process.env[key] +'"');
 // });
+
+checkKeycloakServer();
 
 const port = process.env.PORT || 3300;
 console.log(`Running server on port ${port}`);
