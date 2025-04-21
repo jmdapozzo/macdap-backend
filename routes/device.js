@@ -193,7 +193,8 @@ async function getUpdate(req, res, next) {
       currentAppBuildNumber
     );
 
-    let firmwareList = await getFirmwareList(currentAppPlatformType, currentAppTitle);
+    const title = currentAppTitle.replace(/\s+/g, ""); 
+    let firmwareList = await getFirmwareList(currentAppPlatformType, title);
     firmwareList.sort((fileInfo1, fileInfo2) => {
       return semver.compare(fileInfo1.version, fileInfo2.version);
     });
