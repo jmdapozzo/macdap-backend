@@ -255,25 +255,17 @@ function sleep(millis) {
 async function sopfeuQuery() {
   const currentDate = new Date();
   if (currentDate >= nextUpdateAt) {
+    await sopfeuQueryRiskZones();
+    //await sopfeuQueryMeasures();
+
     const lastUpdate = new Date();
     nextUpdateAt = new Date();
     nextUpdateAt.setTime(
       nextUpdateAt.getTime() + nextUpdateDelayInMinute * 60 * 1000
     );
     console.log(`Last update at ${lastUpdate} \nNext one schedule at ${nextUpdateAt}`);
-
-    await sopfeuQueryRiskZones();
-    //await sleep(1000); Maybe needed when we go back to sopfeu.qc.ca
-    await sopfeuQueryMeasures();
   } else {
     //console.log("No update needed");
-  }
-}
-
-function logRequest(req) {
-  if (false) {
-    console.log(req);
-    console.log(req.headers);
   }
 }
 
@@ -281,23 +273,23 @@ async function sopfeuQueryRiskZones() {
   console.log("Fetching risk zones");
   try {
     const httpsAgent = new https.Agent({ rejectUnauthorized: false });
-    const riskZonesResult = await fetch("https://cartes.sopfeu.qc.ca/risk-zones", { agent: httpsAgent });
-    logRequest(riskZonesResult);
+    const riskZonesResult = await fetch("https://geofeux.sopfeu.qc.ca/sopfeu-api/public/danger-incendie", { agent: httpsAgent });
     if (riskZonesResult.ok) {
       const riskZonesData = await riskZonesResult.json();
-      fireRisks = riskZonesData.map((o) => {
+      const lastUpdate = riskZonesData[1].DateDernierCalculDanger;
+      fireRisks = riskZonesData[0].map((o) => {
         return new Risk(
-          o.id,
-          o.name,
-          o.updatedAt,
-          o.riskNow,
-          o.riskTomorrow,
-          o.riskAfterTomorrow
+          o.NumeroZone,
+          o.NomZone,
+          lastUpdate,
+          o.DangerJour1.Id,
+          o.DangerJour2.Id,
+          o.DangerJour3.Id
         );
       });
 
-      regions = riskZonesData.map((o) => {
-        return new Region(o.id, o.name);
+      regions = riskZonesData[0].map((o) => {
+        return new Region(o.NumeroZone, o.NomZone);
       });
     } else {
       console.log(`Error "${riskZonesResult.statusText}  (${riskZonesResult.status})" fetching risk-zones`);
@@ -312,7 +304,6 @@ async function sopfeuQueryMeasures() {
   try {
     const httpsAgent = new https.Agent({ rejectUnauthorized: false });
     const measuresResult = await fetch("https://cartes.sopfeu.qc.ca/measures", { agent: httpsAgent });
-    logRequest(measuresResult);
     if (measuresResult.ok) {
       const measuresData = await measuresResult.json();
       measures = measuresData.map((o) => {

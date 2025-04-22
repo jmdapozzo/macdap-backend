@@ -48,3 +48,20 @@ services:
       GITHUB_API_KEY: ${GITHUB_API_KEY}
     restart: no
 
+
+Updated SOPFEU data for new API:
+
+Returns an array of geolocalized polygon regions
+https://www.sopfeu.qc.ca/layers/zdi.json
+From the sopfeu js, there is a relation zdi.Numero === danger-incendie.NumeroZone
+
+Returns an arry of geographics codes???
+https://geofeux.sopfeu.qc.ca/sopfeu-api/public/codes-geographiques
+
+Returns an array of fires (empty at time of writing)
+https://geofeux.sopfeu.qc.ca/sopfeu-api/public/feux
+
+Returns an array of fire risks
+https://geofeux.sopfeu.qc.ca/sopfeu-api/public/danger-incendie
+Seems to be like the old https://cartes.sopfeu.qc.ca/risk-zones API
+sopfeuQueryRiskZones has been adapted for newer API
