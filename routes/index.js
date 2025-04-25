@@ -50,17 +50,17 @@ const getTimeZones = (req, res, next) => {
 
 const getMapJWT = (req, res, next) => {
   const header = {
-    alg: "HS256",
+    alg: "ES256",
     typ: "JWT",
-    kid: "yourmapidkey"
+    kid: process.env.APPLE_MAP_ID_KEY
   }
   const payload = {
-    iss: "yourteamid",
+    iss: process.env.APPLE_TEAM_ID,
     iat: Date.now() / 1000,
     exp: (Date.now() / 1000) + 15778800
   }
 
-  var privateKey = fs.readFileSync("./private.p8");
+  var privateKey = fs.readFileSync("./" + process.env.APPLE_MAP_CERTIFICATE_NAME);
   var token = jwt.sign(payload, privateKey, { header: header });
   res.json({ token: token });
 }
