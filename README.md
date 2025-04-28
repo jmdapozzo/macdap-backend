@@ -14,39 +14,45 @@ docker push jmdapozzo/macdap-
 Add an npm script
 "build": "docker buildx build -t jmdapozzo/macdap-backend . --platform linux/amd64,linux/arm64 && docker push jmdapozzo/macdap-backend"
 
-version: "3.9"
+Use this in a portainer stack editor
 services:
   macdap-backend:
     platform: linux/amd64
     image: jmdapozzo/macdap-backend
     container_name: macdap-backend
-    build: .
     ports:
-      - "3000:3000"
-    volumes:
-      - /volume1/docker/macdap:/app/public/repository:rw
+      - "3300:3300"
+    networks:
+      - backend
+      - database
+      - authServer
     environment:
-      NODE_ENV: development
-      DEBUG: app
-      AUTH0_ISSUER: ${AUTH0_ISSUER}
-      AUTH0_AUDIENCE_BACKEND: ${AUTH0_AUDIENCE_BACKEND}
-      AUTH0_AUDIENCE_BACKEND_IOT: ${AUTH0_AUDIENCE_BACKEND_IOT}
-      AUTH0_AUDIENCE_MANAGEMENT: ${AUTH0_AUDIENCE_MANAGEMENT}
-      AUTH0_CLIENT_ID: ${AUTH0_CLIENT_ID}
-      AUTH0_CLIENT_SECRET: ${AUTH0_CLIENT_SECRET}
-      AUTH0_ACCESS_TOKEN_URL: ${AUTH0_ACCESS_TOKEN_URL}
       KEYCLOAK_REALM: ${KEYCLOAK_REALM}
       KEYCLOAK_SERVER_URL: ${KEYCLOAK_SERVER_URL}
       KEYCLOAK_CLIENT_ID_IOT: ${KEYCLOAK_CLIENT_ID_IOT}
       KEYCLOAK_CLIENT_ID_WEB: ${KEYCLOAK_CLIENT_ID_WEB}
       KEYCLOAK_PUBLIC_KEY: ${KEYCLOAK_PUBLIC_KEY}
+      APPLE_TEAM_ID: ${APPLE_TEAM_ID}
+      APPLE_MAP_ID_KEY: ${APPLE_MAP_ID_KEY}
+      APPLE_MAP_CERTIFICATE_NAME: ${APPLE_MAP_CERTIFICATE_NAME}
       PG_HOST: ${PG_HOST}
       PG_PORT: ${PG_PORT}
       PG_USER: ${PG_USER}
       PG_PASSWORD: ${PG_PASSWORD}
       PG_DATABASE: ${PG_DATABASE}
       GITHUB_API_KEY: ${GITHUB_API_KEY}
-    restart: no
+    restart: unless-stopped
+
+networks:
+  backend:
+    name: macdap-backend_default
+  database:
+    external: true
+    name: postgresql_default
+  authServer:
+    external: true
+    name: keycloak_default
+
 
 
 Updated SOPFEU data for new API:
