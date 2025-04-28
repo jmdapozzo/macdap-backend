@@ -4,7 +4,6 @@ const fs = require("fs");
 const path = require("path");
 const axios = require('axios');
 const semver = require("semver");
-const checkJwtBackendIot = require("../auth/check-jwt-backend-iot");
 const keycloakIot = require("../auth/keycloak-iot-device");
 const keycloakWeb = require("../auth/keycloak-web-frontend");
 const { Octokit } = require("octokit");
@@ -305,15 +304,9 @@ function putLockVersion(req, res, next) {
 router.get("/v3", keycloakWeb.protect(), (req, res, next) =>
   getDevices(req, res, next)
 );
-router.post("/v2/connection", checkJwtBackendIot, (req, res, next) =>
-  postDeviceConnection(req, res, next)
-);
 router.post("/v3/connection", keycloakIot.protect(), (req, res, next) =>
   postDeviceConnection(req, res, next)
 );
-router.get("/v2/update", checkJwtBackendIot, (req, res, next) => {
-  getUpdate(req, res, next);
-});
 router.get("/v3/update", keycloakIot.protect(), (req, res, next) => {
   getUpdate(req, res, next);
 });
