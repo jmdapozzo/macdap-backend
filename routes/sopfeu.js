@@ -6,6 +6,7 @@ const { setIntervalAsync } = require("set-interval-async");
 const turf = require("@turf/turf");
 const isValidCoordinates = require("is-valid-coordinates");
 const createError = require("http-errors");
+const keycloakWeb = require("../auth/keycloak-web-frontend");
 
 class Region {
   id;
@@ -325,13 +326,13 @@ async function sopfeuQueryMeasures() {
   }
 }
 
-router.get("/fire-risks/v1", (req, res, next) => getFireRisks(req, res, next));
+router.get("/fire-risks/v1", keycloakWeb.protect(), (req, res, next) => getFireRisks(req, res, next));
 router.post("/fire-risks/v1", (req, res, next) => putFireRisks(req, res, next));
 router.get("/fire-risks/v1/:id", (req, res, next) => getFireRisk(req, res, next));
 router.get("/fire-risks/v1/:id/:currentRisk", (req, res, next) => getFireRisk(req, res, next));
 router.get("/regions/v1", (req, res, next) => getRegions(req, res, next));
 router.get("/regions/v1/:id", (req, res, next) => getRegion(req, res, next));
-router.get("/risk-colors/v1", (req, res, next) => getRiskColors(req, res, next));
-router.get("/measure/v1/:longitude/:latitude", (req, res, next) => getMeasure(req, res, next));
+router.get("/risk-colors/v1", keycloakWeb.protect(), (req, res, next) => getRiskColors(req, res, next));
+router.get("/measure/v1/:longitude/:latitude", keycloakWeb.protect(), (req, res, next) => getMeasure(req, res, next));
 
 module.exports = router;
