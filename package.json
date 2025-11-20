@@ -1,10 +1,11 @@
 {
   "name": "macdap-backend",
-  "version": "3.0.0",
+  "version": "3.1.2",
   "private": true,
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node app.js"
+    "start": "node app.js",
+    "build": "docker buildx build --push -t jmdapozzo/macdap-backend . --platform linux/amd64,linux/arm64"
   },
   "dependencies": {
     "@turf/turf": "^6.5.0",
@@ -13,7 +14,6 @@
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",
     "express": "~4.18.2",
-    "express-oauth2-jwt-bearer": "^1.6.0",
     "express-session": "^1.18.1",
     "http-errors": "~2.0.0",
     "i18next": "^22.4.5",
