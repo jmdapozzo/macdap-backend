@@ -177,10 +177,7 @@ async function getUpdate(req, res, next) {
     const currentAppVersion = req.headers["macdap-app-version"];
     const currentAppBuildNumber = req.headers["macdap-app-build-number"];
     const currentAppPlatformType = req.headers["macdap-platform-type"];
-    const currentAppPlatformId = req.headers["macdap-platform-id"].padStart(
-      16,
-      "0"
-    );
+    const currentAppPlatformId = req.headers["macdap-platform-id"].padStart(16, "0");
 
     const currentVersion = semver.parse(currentAppVersion);
 
@@ -260,6 +257,8 @@ async function getUpdate(req, res, next) {
       res.send();
     }
   } catch (error) {
+    console.error(`getUpdate error: ${error.name} ${error.message}`);
+    console.error('Request headers:', req.headers);
     next(error);
   }
 }
